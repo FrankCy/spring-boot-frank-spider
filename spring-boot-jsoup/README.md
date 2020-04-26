@@ -12,7 +12,9 @@ Jsoup 查找DOM元素
 Jsoup 使用选择器语法查找DOM元素
 - Demo4
 Jsoup 获取DOM元素属性值
-- Demo6
+- Demo5
 Jsoup 实现爬天猫商城列表（无HttpClient）
-- Demo7
+- Demo6
 Jsoup 代理方式访问网站（无HttpClient）
+- Demo7
+基于JsoupUtil，模拟浏览器渲染后，抓取通过js加载的信息（抓取商品详情时使用）
