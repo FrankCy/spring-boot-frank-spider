@@ -107,7 +107,6 @@ public class JsoupUtil {
             System.out.println("被打断错误");
         }
         String html = driver.getPageSource();
-        System.out.println("爬取到到页面： " + html);
         Document document = Jsoup.parse(html);
         return document.select(listRangeEx);
     }

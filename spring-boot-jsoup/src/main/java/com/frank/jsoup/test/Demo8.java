@@ -166,62 +166,27 @@ public class Demo8 {
 
     }
 
-
-    public static void kaola() throws IOException {
-        try {
-            // 列表看是位置
-            String listRangeEx = "div.m-result";
-            String goodsName = "神仙水";
-            Elements elements = JsoupUtil.getDocument("https://search.kaola.com/search.html?key="+goodsName, 1, 1001, null, listRangeEx);
-            JXDocument jxd = new JXDocument(elements);
-
-            System.out.println("elements : " + elements);
-
-            // 商品
-            List<JXNode> goods = jxd.selN("//*[@id=\"result\"]");
-            System.out.println("goods : " + goods);
-
-            for(int i=0; i<goods.size(); i++) {
-                JXNode jxNode = goods.get(i);
-                System.out.println("------------------------ jxNode --------------------------");
-                System.out.println(jxNode);
-
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void tmall() throws IOException {
         try {
             // 列表看是位置
-            String listRangeEx = "div[class='view grid-nosku view-noCom']";
+            String listRangeEx = "div.product";
             String goodsName = "小黑瓶";
             goodsName =  URLEncoder.encode(goodsName, "gb2312");
             Elements elements = JsoupUtil.getDocument("https://list.tmall.com/search_product.htm?q="+goodsName, 1, 1001, null, listRangeEx);
-            JXDocument jxd = new JXDocument(elements);
 
-            System.out.println("elements : " + elements);
-
-            // 商品
-            List<JXNode> goods = jxd.selN("//*[@id=\"J_ItemList\"]/div");
-            System.out.println("goods ------ size " + goods.size());
-            System.out.println("goods ------ obj" + goods);
-
-            for(int i=0; i<goods.size(); i++) {
-                JXNode jxNode = goods.get(i);
-                System.out.println("------------------------ jxNode --------------------------");
-                // 店铺名
-                System.out.println("-------- 店铺名 --------");
-                System.out.println(formatNode(jxNode.sel("//*[@id=\"J_ItemList\"]/div/div/div[2]")));
+            System.out.println(elements.size());
+            for(Element e : elements) {
+                // 店铺名称
+                String shopName = formatNode(e.select("div[class='product-iWrap'] div[class='productShop'] a[class='productShop-name']").text());
+                System.out.println("店铺名称: " + shopName);
                 // 店铺首页地址
-                System.out.println("-------- 店铺首页地址 --------");
-                System.out.println(formatNode(jxNode.sel("//*[@id=\"J_ItemList\"]/div["+ i +"]/div/div[2]/a/@href")));
+                String homeAddr = formatNode(e.select("div[class='product-iWrap'] div[class='productShop'] a").attr("href"));
+                System.out.println("店铺首页地址: " + homeAddr);
                 // 商品详情地址
-                System.out.println("-------- 商品详情地址 --------");
-                System.out.println(formatNode(jxNode.sel("//*[@id=\"J_ItemList\"]/div["+ i +"]/div/div[1]/a/@href")));
+                String listGoodsUrl = formatNode(e.select("div[class='product-iWrap']  div[class='productImg-wrap'] a").attr("href"));
+                System.out.println("商品详情地址: " + listGoodsUrl);
             }
+
 
         } catch (Exception e) {
             e.printStackTrace();
