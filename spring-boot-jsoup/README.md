@@ -18,3 +18,5 @@ Jsoup 实现爬天猫商城列表（无HttpClient）
 Jsoup 代理方式访问网站（无HttpClient）
 - Demo7
 基于JsoupUtil，模拟浏览器渲染后，抓取通过js加载的信息（抓取商品详情时使用）
+- Demo8
+基于JsoupUtil，模拟浏览器渲染后，抓取通过js加载的信息（抓取商品详情时使用），返回Elements

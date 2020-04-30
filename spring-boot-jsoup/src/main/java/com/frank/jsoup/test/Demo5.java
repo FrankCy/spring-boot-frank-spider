@@ -18,7 +18,7 @@ import java.io.IOException;
  */
 public class Demo5 {
 
-    public static void main(String[] args) throws IOException {
+    public static void tmallList() throws IOException {
         // 关键字
         String input = "神仙水";
         // 需要爬取商品信息的网站地址
@@ -57,5 +57,13 @@ public class Demo5 {
         // 下一页
         String href = contentEle.select(".main .ui-page .ui-page-wrap .ui-page-num .ui-page-next ").attr("href");
         System.out.println("下一页：" + href);
+    }
+
+    public static void main(String[] args){
+        try {
+            tmallList();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
