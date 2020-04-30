@@ -1,11 +1,20 @@
 package com.frank.jsoup.test;
 
 import com.frank.jsoup.test.util.JsoupUtil;
+import com.frank.jsoup.test.util.UserAgentUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.seimicrawler.xpath.JXDocument;
 import org.seimicrawler.xpath.JXNode;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -17,7 +26,146 @@ import java.util.List;
  * @Description: ${description}
  * @Date: 2020-04-30 10:09
  */
+@Slf4j
 public class Demo8 {
+
+    public static void kaolaXpath() {
+
+        // 关键字
+        String input = "神仙水";
+        // 需要爬取商品信息的网站地址
+        String url = "https://search.kaola.com/search.html?key==" + input;
+        // 提取HTML得到商品信息结果
+        Document doc = null;
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("121.237.149.63", 3000));
+
+        // doc获取整个页面的所有数据
+        Connection connection = Jsoup.connect(url).proxy(proxy);
+        connection.header("user-agent", UserAgentUtil.getRandomUserAgent());
+        try {
+            doc = connection.get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //输出doc可以看到所获取到的页面源代码
+//        System.out.println(doc);
+        // 通过浏览器查看商品页面的源代码，找到信息所在的div标签，再对其进行一步一步地解析
+        Elements ulList = doc.select("div.m-result");
+        JXDocument jxd = new JXDocument(ulList);
+
+        // 商品列表
+        List<JXNode> goods = jxd.selN("//*[@id=\"result\"]/li");
+        for(int i=0; i<goods.size(); i++) {
+            System.out.println("---------------------- 分隔 ----------------------");
+            JXNode jxNode = goods.get(i);
+            // 详情页地址
+            String detailUrl = formatNode(jxNode.sel("//li[1]/div/a/@href"));
+            System.out.println("详情页地址: " +detailUrl);
+            // 售价
+            String price = formatNode(jxNode.sel("//li[1]/div/div/p[1]/span[1]/text()"));
+            System.out.println("售价: " +price);
+            // 会员价
+            String memberPrice = formatNode(jxNode.sel("//li[5]/div/div/p[1]/span[2]/text()"));
+            System.out.println("会员价: " +memberPrice);
+            // 市场价
+            String marketprice = formatNode(jxNode.sel("//li[1]/div/div/p[1]/span[2]/del/text()"));
+            System.out.println("市场价: " +marketprice);
+            // 折扣
+            String discountstr = formatNode(jxNode.sel("//li[6]/div/div/p[1]/span[2]/span/text()"));
+            System.out.println("折扣: " +discountstr);
+            // 商品名称
+            String goodsName = formatNode(jxNode.sel("//li[1]/div/div/div/a/h2/text()"));
+            System.out.println("商品名称: " +goodsName);
+            // 销售信息1
+            String saelsinfo1 = formatNode(jxNode.sel("//li[1]/div/div/p[2]/span[1]/text()"));
+            System.out.println("销售信息1: " + saelsinfo1);
+            // 销售信息2
+            String saelsinfo2 = formatNode(jxNode.sel("//li[1]/div/div/p[2]/span[2]/text()"));
+            System.out.println("销售信息2: " +saelsinfo2);
+            // 销售信息3
+            String saelsinfo3 = formatNode(jxNode.sel("//li[1]/div/div/p[2]/span[3]/text()"));
+            System.out.println("销售信息3: " +saelsinfo3);
+            // 销售信息4
+            String saelsinfo4 = formatNode(jxNode.sel("//li[1]/div/div/p[2]/span[4]/text()"));
+            System.out.println("销售信息4: " +saelsinfo4);
+            // 评论总条目数
+            String totalComments = formatNode(jxNode.sel("//li[1]/div/div/p[3]/a/text()"));
+            System.out.println("评论总条目数: " +totalComments);
+            // 原产地
+            String origin = formatNode(jxNode.sel("//li[1]/div/div/p[3]/span/text()"));
+            System.out.println("原产地: " +origin);
+            // 店铺名称
+            String shopName = formatNode(jxNode.sel("//li[1]/div/div/p[4]/span/text()"));
+            System.out.println("店铺名称: " + shopName);
+        }
+
+    }
+
+    public static void kaolaSelec() {
+
+        // 关键字
+        String input = "神仙水";
+        // 需要爬取商品信息的网站地址
+        String url = "https://search.kaola.com/search.html?key==" + input;
+        // 提取HTML得到商品信息结果
+        Document doc = null;
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("121.237.149.63", 3000));
+
+        // doc获取整个页面的所有数据
+        Connection connection = Jsoup.connect(url).proxy(proxy);
+        connection.header("user-agent", UserAgentUtil.getRandomUserAgent());
+        try {
+            doc = connection.get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //输出doc可以看到所获取到的页面源代码
+//        System.out.println(doc);
+        // 通过浏览器查看商品页面的源代码，找到信息所在的div标签，再对其进行一步一步地解析
+        Elements elements = doc.select("div.m-result ul.clearfix li.goods");
+        // 商品列表
+        for(Element element : elements) {
+            System.out.println("---------------------- 分隔 ----------------------");
+            // 详情地址
+            String detailUrl = formatNode(element.select("div[class='goodswrap promotion'] a").attr("href"));
+            System.out.println("详情地址: " +detailUrl);
+            // 售价
+            String price = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='price'] span[class='cur']").text());
+            System.out.println("售价: " +price);
+            // 会员价
+            String memberPrice = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='price'] span[class='memberprice']").text());
+            System.out.println("会员价: " +memberPrice);
+            // 市场价
+            String marketprice = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='price'] span[class='marketprice']").text());
+            System.out.println("市场价: " +marketprice);
+            // 折扣
+            String discountstr = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='price'] span[class='discounticon'] span[class='discountstr']").text());
+            System.out.println("折扣: " +discountstr);
+            // 商品名称
+            String goodsName = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] div[class='titlewrap'] a[class='title']").text());
+            System.out.println("商品名称: " +goodsName);
+            // 销售信息1
+            String saelsinfo1 = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='saelsinfo'] span[class='activity z-interestfree']").text());
+            System.out.println("销售信息1: " + saelsinfo1);
+            // 销售信息2
+            String saelsinfo2 = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='saelsinfo'] span[class='activity z-self']").text());
+            System.out.println("销售信息2: " +saelsinfo2);
+            // 销售信息3
+            String saelsinfo3 = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='saelsinfo'] span[class='activity z-benefit']").text());
+            System.out.println("销售信息3: " +saelsinfo3);
+            // 评论总条目数
+            String totalComments = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='goodsinfo clearfix'] a[class='comments']").text());
+            System.out.println("评论总条目数: " +totalComments);
+            // 原产地
+            String origin = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='goodsinfo clearfix'] span[class='proPlace ellipsis']").text());
+            System.out.println("原产地: " +origin);
+            // 店铺名称
+            String shopName = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='selfflag'] a").text());
+            System.out.println("店铺名称: " + shopName);
+        }
+
+    }
+
 
     public static void kaola() throws IOException {
         try {
@@ -57,20 +205,44 @@ public class Demo8 {
             System.out.println("elements : " + elements);
 
             // 商品
-            List<JXNode> goods = jxd.selN("//*[@id=\"J_ItemList\"]/div[1]");
-            System.out.println("goods : " + goods);
+            List<JXNode> goods = jxd.selN("//*[@id=\"J_ItemList\"]/div");
+            System.out.println("goods ------ size " + goods.size());
+            System.out.println("goods ------ obj" + goods);
 
             for(int i=0; i<goods.size(); i++) {
                 JXNode jxNode = goods.get(i);
                 System.out.println("------------------------ jxNode --------------------------");
-                System.out.println(jxNode);
-
+                // 店铺名
+                System.out.println("-------- 店铺名 --------");
+                System.out.println(formatNode(jxNode.sel("//*[@id=\"J_ItemList\"]/div/div/div[2]")));
+                // 店铺首页地址
+                System.out.println("-------- 店铺首页地址 --------");
+                System.out.println(formatNode(jxNode.sel("//*[@id=\"J_ItemList\"]/div["+ i +"]/div/div[2]/a/@href")));
+                // 商品详情地址
+                System.out.println("-------- 商品详情地址 --------");
+                System.out.println(formatNode(jxNode.sel("//*[@id=\"J_ItemList\"]/div["+ i +"]/div/div[1]/a/@href")));
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    public static String formatNode(List<JXNode> list) {
+        if(list.size() == 0) {
+            return "";
+        }
+        return list.get(0).toString();
+    }
+
+    public static String formatNode(String str) {
+        if(StringUtils.isEmpty(str)) {
+            return "";
+        } else {
+            return str;
+        }
+    }
+
 
     public static void main(String[] args) throws IOException {
         tmall();
