@@ -107,26 +107,9 @@ public class JsoupUtil {
             System.out.println("被打断错误");
         }
         String html = driver.getPageSource();
+        System.out.println("获取结果：" + html);
         Document document = Jsoup.parse(html);
         return document.select(listRangeEx);
-    }
-
-    /**
-     * @Method
-     * @Author cy
-     * @Version  1.0
-     * @Description
-     * @param src
-     * @param time
-     * @param sleep
-     * @param proxyInfo
-     * @param listRangeEx
-     * @Return
-     * @Date 2020-04-30
-     */
-    public static Elements jsoupGet(String src, int time, long sleep, String proxyInfo, String listRangeEx) throws IOException {
-
-        return null;
     }
 
     public static void cloose(){

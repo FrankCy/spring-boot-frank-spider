@@ -29,6 +29,9 @@ import java.util.List;
 @Slf4j
 public class Demo8 {
 
+    /**
+     * 考拉列表（Xpath版）
+     */
     public static void kaolaXpath() {
 
         // 关键字
@@ -101,6 +104,9 @@ public class Demo8 {
 
     }
 
+    /**
+     * 考拉列表（表达式版）
+     */
     public static void kaolaSelec() {
 
         // 关键字
@@ -166,6 +172,10 @@ public class Demo8 {
 
     }
 
+    /**
+     * 天猫列表
+     * @throws IOException
+     */
     public static void tmall() throws IOException {
         try {
             // 列表看是位置
@@ -193,6 +203,31 @@ public class Demo8 {
         }
     }
 
+    /**
+     * 天猫详情页
+     * @throws IOException
+     */
+    public static void tmallDetail() throws IOException {
+        try {
+            // 列表看是位置
+            String listRangeEx = "dl.item";
+            String goodsName = "兰蔻";
+            goodsName =  URLEncoder.encode(goodsName, "gb2312");
+            System.out.println("goodsName: " + goodsName);
+            Elements elements = JsoupUtil.getDocument("https://store.taobao.com/search.htm?user_number_id=2360209412&keyword="+goodsName, 1, 1001, null, listRangeEx);
+
+            System.out.println(elements.size());
+            for(Element e : elements) {
+                System.out.println("---------------------------- 信息 ----------------------------");
+                System.out.println(e.html());
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static String formatNode(List<JXNode> list) {
         if(list.size() == 0) {
             return "";
@@ -209,7 +244,7 @@ public class Demo8 {
     }
 
 
-    public static void main(String[] args) throws IOException {
-        tmall();
+    public static void main(String[] args) throws Exception {
+        tmallDetail();
     }
 }
