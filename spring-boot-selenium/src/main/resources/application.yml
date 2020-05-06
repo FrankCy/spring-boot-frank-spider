@@ -1,0 +1,7 @@
+spring:
+  jmx:
+    default-domain: twitch-live
+
+#chorme webdriver的路径
+web:
+  driver: /Users/cy/operation-tools/chromedriver/chromedriver

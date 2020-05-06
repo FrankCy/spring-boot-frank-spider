@@ -19,4 +19,10 @@ Jsoup 代理方式访问网站（无HttpClient）
 - Demo7
 基于JsoupUtil，模拟浏览器渲染后，抓取通过js加载的信息（抓取商品详情时使用）
 - Demo8
-基于JsoupUtil，模拟浏览器渲染后，抓取通过js加载的信息（抓取商品详情时使用），返回Elements
+基于JsoupUtil，模拟浏览器渲染后，抓取通过js加载的信息（抓取商品详情时使用），返回Elements，含xPath版
+- Demo9
+爬取通过js加载的店铺详情信息
+- Demo10
+爬取某药商品列表
+- Demo11
+爬取某猫详情搜索页，辨别实际请求地址，获取真实商品列表信息

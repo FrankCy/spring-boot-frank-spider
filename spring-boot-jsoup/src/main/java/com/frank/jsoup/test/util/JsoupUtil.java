@@ -1,19 +1,25 @@
 package com.frank.jsoup.test.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.seimicrawler.xpath.JXNode;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -75,6 +81,36 @@ public class JsoupUtil {
     }
 
     /**
+     * 获取Cookie
+     * @param src
+     * @param time
+     * @param sleep
+     * @return
+     */
+    public static Set<Cookie> getCookieToPhantomjs(String src, int time, int sleep, String proxyInfo){
+        if(!StringUtils.isEmpty(proxyInfo)) {
+            // 设置代理
+            Proxy proxy = new Proxy();
+            proxy.setHttpProxy(proxyInfo).setFtpProxy(proxyInfo).setSslProxy(proxyInfo);
+            dcaps.setCapability(CapabilityType.ForSeleniumServer.AVOIDING_PROXY, true);
+            dcaps.setCapability(CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC, true);
+            System.setProperty("http.nonProxyHosts", "localhost");
+            dcaps.setCapability(CapabilityType.PROXY, proxy);
+        }
+
+        driver = getDriver();
+        driver.manage().timeouts().implicitlyWait(time, TimeUnit.SECONDS);
+        driver.get(src);
+        try {
+            Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Set<Cookie> cookies = driver.manage().getCookies();
+        return cookies;
+    }
+
+    /**
      * @Method
      * @Author cy
      * @Version  1.0
@@ -108,13 +144,120 @@ public class JsoupUtil {
         }
         String html = driver.getPageSource();
         System.out.println("获取结果：" + html);
+        System.out.println("------------------------------------------------------------------------------------------------------------------------");
         Document document = Jsoup.parse(html);
         return document.select(listRangeEx);
+    }
+
+
+    /**
+     * 爬取数据工具类(解决天猫店铺列表无法获取的问题)
+     * @param src 爬取路径
+     * @param sleep 抓取等待间隔
+     * @param targetEx 商品列表的具体位置
+     * @return
+     */
+    public static Elements getDocument(String src, int sleep, String targetEx, Map<String, String> cookieMap, Map<String, String> headerMap) throws IOException {
+
+        //输入要爬取的页面
+        String url = src;
+        try {
+            if(sleep < 5000) {
+                sleep = 5000;
+            }
+            // 添加时间间隔 5s，至少5s，解决 418问题。
+            Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Document doc = null;
+        if(cookieMap != null && headerMap == null) {
+            doc = Jsoup.connect(url).userAgent(UserAgentUtil.getRandomUserAgent()).cookies(cookieMap).get();
+            System.out.println("---------------- 解析html Cookie ----------------" + doc.val());
+        } else
+        if(headerMap != null && cookieMap == null) {
+            doc = Jsoup.connect(url).userAgent(UserAgentUtil.getRandomUserAgent()).headers(headerMap).get();
+            System.out.println("---------------- 解析html Header ----------------" + doc.val());
+        } else
+        if(cookieMap != null && headerMap != null) {
+            doc = Jsoup.connect(url).userAgent(UserAgentUtil.getRandomUserAgent()).headers(headerMap).cookies(cookieMap).get();
+            System.out.println("---------------- 解析html Header Cookie ----------------" + doc.val());
+        } else {
+        //解析html
+        doc = Jsoup.connect(url).userAgent(UserAgentUtil.getRandomUserAgent()).get();
+        System.out.println("---------------- 解析html no Cookie no Header  ----------------" + doc.val());
+        }
+        Elements elements = doc.select(targetEx);
+        return elements;
+    }
+
+    /**
+     * 爬取数据工具类(解决天猫店铺列表无法获取的问题)
+     * @param src 爬取路径
+     * @param sleep 抓取等待间隔
+     * @param targetEx 商品列表的具体位置
+     * @return
+     */
+    public static Elements getDocument(String src, int sleep, String targetEx, Map<String, String> cookieMap) throws IOException {
+
+        //输入要爬取的页面
+        String url = src;
+        try {
+            if(sleep < 5000) {
+                sleep = 5000;
+            }
+            // 添加时间间隔 5s，至少5s，解决 418问题。
+            Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Document doc = null;
+        if(cookieMap != null) {
+            doc = Jsoup.connect(url).userAgent(UserAgentUtil.getRandomUserAgent()).cookies(cookieMap).get();
+            System.out.println("---------------- 解析html Header Cookie ----------------" + doc.val());
+        } else {
+            //解析html
+            doc = Jsoup.connect(url).userAgent(UserAgentUtil.getRandomUserAgent()).get();
+            System.out.println("---------------- 解析html no Cookie no Header  ----------------" + doc.val());
+        }
+        Elements elements = doc.select(targetEx);
+        return elements;
+    }
+
+    /**
+     * 获取目标对象Cookie信息
+     * @param src 爬取路径
+     * @param sleep 抓取等待间隔
+     * @return
+     */
+    public static Map<String, String> getCookie(String src, int sleep) throws IOException {
+        // 设置代理
+        Connection.Response response = Jsoup.connect(src).timeout(sleep).execute();
+        Map<String, String> cookies = response.cookies();
+        return cookies;
+    }
+
+    /**
+     * 获取目标对象Header信息
+     * @param src 爬取路径
+     * @param sleep 抓取等待间隔
+     * @return
+     */
+    public static Map<String, String> getHeader(String src, int sleep) throws IOException {
+        Connection.Response response = Jsoup.connect(src).timeout(sleep).execute();
+        return response.headers();
     }
 
     public static void cloose(){
         driver.close();
         driver.quit();
+    }
+
+    public static String formatNode(List<JXNode> list) {
+        if(list.size() == 0) {
+            return "";
+        }
+        return list.get(0).toString();
     }
 
     public static void main(String[] args) {
