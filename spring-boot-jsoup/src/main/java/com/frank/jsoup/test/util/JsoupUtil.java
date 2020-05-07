@@ -16,6 +16,7 @@ import org.seimicrawler.xpath.JXNode;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.InetSocketAddress;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
@@ -151,6 +152,52 @@ public class JsoupUtil {
 
 
     /**
+     * 爬取数据工具类
+     * @param src 爬取路径
+     * @param time 找不到元素默认等待时间
+     * @param sleep 抓取等待间隔
+     * @param proxyInfo 代理地址（xxx.xxx.xxx.xxx:xxxx)
+     * @param listRangeEx 商品列表的具体位置
+     * @param cookieList 携带Cookie
+     * @return
+     */
+    public static Elements getDocument(String src, int time, long sleep, String proxyInfo, String listRangeEx, List<Cookie> cookieList){
+        System.out.println("src --------- " + src);
+        System.out.println("listRangeEx --------- " + listRangeEx);
+
+        if(!StringUtils.isEmpty(proxyInfo)) {
+            // 设置代理
+            Proxy proxy = new Proxy();
+            proxy.setHttpProxy(proxyInfo).setFtpProxy(proxyInfo).setSslProxy(proxyInfo);
+            dcaps.setCapability(CapabilityType.ForSeleniumServer.AVOIDING_PROXY, true);
+            dcaps.setCapability(CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC, true);
+            System.setProperty("http.nonProxyHosts", "localhost");
+            dcaps.setCapability(CapabilityType.PROXY, proxy);
+        }
+
+        driver = getDriver();
+
+        try {
+            if(cookieList != null && cookieList.size() !=0 ) {
+                for(Cookie ck : cookieList) {
+                    driver.manage().addCookie(ck);
+                }
+            }
+            driver.manage().timeouts().implicitlyWait(time, TimeUnit.SECONDS);
+            driver.get(src);
+            Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+            System.out.println("被打断错误");
+        }
+
+        String html = driver.getPageSource();
+        System.out.println("爬取的数据： " + html);
+        Document document = Jsoup.parse(html);
+        return document.select(listRangeEx);
+    }
+
+
+    /**
      * 爬取数据工具类(解决天猫店铺列表无法获取的问题)
      * @param src 爬取路径
      * @param sleep 抓取等待间隔
@@ -218,6 +265,41 @@ public class JsoupUtil {
         } else {
             //解析html
             doc = Jsoup.connect(url).userAgent(UserAgentUtil.getRandomUserAgent()).get();
+            System.out.println("---------------- 解析html no Cookie no Header  ----------------" + doc.val());
+        }
+        Elements elements = doc.select(targetEx);
+        return elements;
+    }
+
+    /**
+     * 爬取数据工具类(解决天猫店铺列表无法获取的问题)
+     * @param src 爬取路径
+     * @param sleep 抓取等待间隔
+     * @param targetEx 商品列表的具体位置
+     * @return
+     */
+    public static Elements getDocument(String src, int sleep, String targetEx,String ip, int port, Map<String, String> cookieMap) throws IOException {
+
+        //输入要爬取的页面
+        String url = src;
+        try {
+            if(sleep < 5000) {
+                sleep = 5000;
+            }
+            // 添加时间间隔 5s，至少5s，解决 418问题。
+            Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Document doc = null;
+        if(cookieMap != null) {
+            java.net.Proxy proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress(ip, port));
+            doc = Jsoup.connect(url).proxy(proxy).userAgent(UserAgentUtil.getRandomUserAgent()).cookies(cookieMap).get();
+            System.out.println("---------------- 解析html Header Cookie ----------------" + doc.val());
+        } else {
+            //解析html
+            java.net.Proxy proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress(ip, port));
+            doc = Jsoup.connect(url).proxy(proxy).userAgent(UserAgentUtil.getRandomUserAgent()).get();
             System.out.println("---------------- 解析html no Cookie no Header  ----------------" + doc.val());
         }
         Elements elements = doc.select(targetEx);
