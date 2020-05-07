@@ -87,7 +87,7 @@ public class JsoupUtil {
      * @param sleep
      * @return
      */
-    public static Set<Cookie> getCookieToPhantomjs(String src, int time, int sleep, String proxyInfo){
+    public static Set<Cookie> getCookieToPhantomjs(String src, int time, int sleep, String proxyInfo, Cookie cookie){
         if(!StringUtils.isEmpty(proxyInfo)) {
             // 设置代理
             Proxy proxy = new Proxy();

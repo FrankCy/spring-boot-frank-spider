@@ -9,6 +9,7 @@ import org.seimicrawler.xpath.JXNode;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ProjectName: spring-boot-frank-spider
@@ -43,6 +44,8 @@ public class Demo11 {
             System.out.println("--------------- ||| ----------------");
             System.out.println(e.attr("value"));
         }
+        // 获取Cookie
+        Map<String, String> cookieMap =  JsoupUtil.getCookie(url, 1000);
 
         // 获取实际请求地址
         String realUrl = UrlUtil.getRealUrl(url);
@@ -58,7 +61,8 @@ public class Demo11 {
         System.out.println("店铺实际展示数据的地址为："+ searchUrl);
 
         // 获取实际请求地址的Cookie信息，然后请求目标对象（程序获取的Cookie不可用，自己根据浏览器调试模式拿到）cookie key v组装的map传递进去就好用，tmall厉害！
-        Elements realElements = JsoupUtil.getDocument(searchUrl, 10, 5000,  "163.204.218.144:4242","body");
+//        Elements realElements = JsoupUtil.getDocument(searchUrl, 10, 5000,  "163.204.218.144:4242","body");
+        Elements realElements = JsoupUtil.getDocument(searchUrl, 5000, "body", cookieMap, null);
 
         JXDocument jxd = new JXDocument(realElements);
 
