@@ -26,3 +26,8 @@ Jsoup 代理方式访问网站（无HttpClient）
 爬取某药商品列表
 - Demo11
 爬取某猫详情搜索页，辨别实际请求地址，获取真实商品列表信息
+- Demo12
+Selenium Demo，需要本地先下载chromedriver
+下载地址（下面2个都行，我用的第2个）：
+[http://chromedriver.storage.googleapis.com/index.html](http://chromedriver.storage.googleapis.com/index.html)
+[http://npm.taobao.org/mirrors/chromedriver/](http://npm.taobao.org/mirrors/chromedriver/)
