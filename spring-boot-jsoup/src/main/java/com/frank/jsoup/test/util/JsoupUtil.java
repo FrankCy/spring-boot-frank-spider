@@ -272,13 +272,15 @@ public class JsoupUtil {
     }
 
     /**
-     * 爬取数据工具类(解决天猫店铺列表无法获取的问题)
+     * 爬取数据工具类
      * @param src 爬取路径
      * @param sleep 抓取等待间隔
      * @param targetEx 商品列表的具体位置
+     * @param isProxy 是否使用代理
+     * @param cookieMap cookies
      * @return
      */
-    public static Elements getDocument(String src, int sleep, String targetEx,String ip, int port, Map<String, String> cookieMap) throws IOException {
+    public static Elements getDocument(String src, int sleep, String targetEx,Boolean isProxy, Map<String, String> cookieMap) throws IOException {
 
         //输入要爬取的页面
         String url = src;
@@ -292,16 +294,19 @@ public class JsoupUtil {
             e.printStackTrace();
         }
         Document doc = null;
-        if(cookieMap != null) {
-            java.net.Proxy proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress(ip, port));
-            doc = Jsoup.connect(url).proxy(proxy).userAgent(UserAgentUtil.getRandomUserAgent()).cookies(cookieMap).get();
-            System.out.println("---------------- 解析html Header Cookie ----------------" + doc.val());
-        } else {
-            //解析html
-            java.net.Proxy proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress(ip, port));
-            doc = Jsoup.connect(url).proxy(proxy).userAgent(UserAgentUtil.getRandomUserAgent()).get();
-            System.out.println("---------------- 解析html no Cookie no Header  ----------------" + doc.val());
+        java.net.Proxy proxy = null;
+        if(isProxy) {
+            // 使用代理（这里使用一个工具类，随机获取可用ip和port）
+            proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress("" , 0));
         }
+
+        if(cookieMap != null) {
+            doc = Jsoup.connect(url).proxy(proxy).timeout(5000).userAgent(UserAgentUtil.getRandomUserAgent()).cookies(cookieMap).get();
+        } else {
+            doc = Jsoup.connect(url).proxy(proxy).timeout(5000).userAgent(UserAgentUtil.getRandomUserAgent()).get();
+        }
+
+        System.out.println("爬取的结果 html ---------------- ：" + doc.html());
         Elements elements = doc.select(targetEx);
         return elements;
     }

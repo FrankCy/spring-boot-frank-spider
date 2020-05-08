@@ -21,12 +21,11 @@ public class Demo13 {
             String goodsName = "小黑瓶";
 //            goodsName =  URLEncoder.encode(goodsName, "gb2312");
             System.out.println("goodsName: " + goodsName);
-            Elements elements = JsoupUtil.getDocument("https://www.sephora.cn/search/?k="+goodsName, 1000, listRangeEx, null);
+            Elements elements = JsoupUtil.getDocument("https://www.sephora.cn/search/?k="+goodsName, 1000, listRangeEx, false, null);
 
             System.out.println(elements.size());
             for(Element e : elements) {
                 System.out.println("---------------------------- 信息 ----------------------------");
-                System.out.println(e.html());
                 // 商品详情地址
                 String goodsDetailUrl = e.select("div[class='p_img'] a").attr("href");
                 System.out.println("商品详情地址：" + goodsDetailUrl);

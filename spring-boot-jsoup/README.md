@@ -31,3 +31,5 @@ Selenium Demo，需要本地先下载chromedriver
 下载地址（下面2个都行，我用的第2个）：
 [http://chromedriver.storage.googleapis.com/index.html](http://chromedriver.storage.googleapis.com/index.html)
 [http://npm.taobao.org/mirrors/chromedriver/](http://npm.taobao.org/mirrors/chromedriver/)
+- Demo13
+爬取丝芙兰数据
