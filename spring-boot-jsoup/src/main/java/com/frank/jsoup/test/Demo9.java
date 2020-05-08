@@ -28,7 +28,7 @@ public class Demo9 {
             String goodsName = "兰蔻";
             goodsName =  URLEncoder.encode(goodsName, "gb2312");
             System.out.println("goodsName: " + goodsName);
-            Elements elements = JsoupUtil.getDocument("https://store.taobao.com/search.htm?user_number_id=2360209412&keyword="+goodsName, 10, 3000, null, listRangeEx);
+            Elements elements = JsoupUtil.getDocument("https://store.taobao.com/search.htm?user_number_id=2360209412&keyword="+goodsName, 10, 3000, false, listRangeEx);
 
             System.out.println(elements.size());
             for(Element e : elements) {

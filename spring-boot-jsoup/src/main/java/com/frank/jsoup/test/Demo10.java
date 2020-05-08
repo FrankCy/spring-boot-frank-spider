@@ -28,7 +28,7 @@ public class Demo10 {
             String goodsName = "西药";
             goodsName =  URLEncoder.encode(goodsName, "gb2312");
             System.out.println("goodsName: " + goodsName);
-            Elements elements = JsoupUtil.getDocument("https://search.mypharma.com/?s_classify1="+goodsName, 1, 1000, null, listRangeEx);
+            Elements elements = JsoupUtil.getDocument("https://search.mypharma.com/?s_classify1="+goodsName, 1, 1000, false, listRangeEx);
 
             System.out.println(elements.size());
             for(Element e : elements) {

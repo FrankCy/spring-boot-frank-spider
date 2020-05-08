@@ -182,7 +182,7 @@ public class Demo8 {
             String listRangeEx = "div.product";
             String goodsName = "小黑瓶";
             goodsName =  URLEncoder.encode(goodsName, "gb2312");
-            Elements elements = JsoupUtil.getDocument("https://list.tmall.com/search_product.htm?q="+goodsName, 1, 1001, null, listRangeEx);
+            Elements elements = JsoupUtil.getDocument("https://list.tmall.com/search_product.htm?q="+goodsName, 1, 1001, false, listRangeEx);
 
             System.out.println(elements.size());
             for(Element e : elements) {

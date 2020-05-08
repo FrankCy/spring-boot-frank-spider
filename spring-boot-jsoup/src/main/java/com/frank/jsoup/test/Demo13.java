@@ -14,7 +14,7 @@ import org.jsoup.select.Elements;
  */
 public class Demo13 {
 
-    public static void main(String[] args) throws Exception {
+    public static void sflList() {
         try {
             // 列表看是位置
             String listRangeEx = "div.p_cont";
@@ -35,6 +35,10 @@ public class Demo13 {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        sflList();
     }
 
 }

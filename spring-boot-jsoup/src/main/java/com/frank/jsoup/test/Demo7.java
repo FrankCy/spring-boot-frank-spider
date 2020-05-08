@@ -1,7 +1,7 @@
 package com.frank.jsoup.test;
 
 import com.frank.jsoup.test.util.JsoupUtil;
-import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 /**
  * @ProjectName: spring-boot-frank-spider
@@ -15,8 +15,8 @@ public class Demo7 {
 
     public static void main(String[] args) {
         try {
-            Document document = JsoupUtil.getDocument("https://item.jd.com/63512697584.html", 1, 1001);
-            System.out.println(document.select("[class='price']"));
+            Elements elements = JsoupUtil.getDocument("https://item.jd.com/63512697584.html", 1, 1001, false, "[class='price']");
+            System.out.println(elements);
         } catch (Exception e) {
             e.printStackTrace();
         }
