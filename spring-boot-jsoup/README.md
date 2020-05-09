@@ -33,3 +33,5 @@ Selenium Demo，需要本地先下载chromedriver
 [http://npm.taobao.org/mirrors/chromedriver/](http://npm.taobao.org/mirrors/chromedriver/)
 - Demo13
 爬取丝芙兰数据
+- Demo14
+爬取考拉店铺列表

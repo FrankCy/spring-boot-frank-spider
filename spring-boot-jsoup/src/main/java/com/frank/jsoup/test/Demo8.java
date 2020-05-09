@@ -39,21 +39,10 @@ public class Demo8 {
         // 需要爬取商品信息的网站地址
         String url = "https://search.kaola.com/search.html?key==" + input;
         // 提取HTML得到商品信息结果
-        Document doc = null;
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("121.237.149.63", 3000));
-
-        // doc获取整个页面的所有数据
-        Connection connection = Jsoup.connect(url).proxy(proxy);
-        connection.header("user-agent", UserAgentUtil.getRandomUserAgent());
-        try {
-            doc = connection.get();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         //输出doc可以看到所获取到的页面源代码
 //        System.out.println(doc);
         // 通过浏览器查看商品页面的源代码，找到信息所在的div标签，再对其进行一步一步地解析
-        Elements ulList = doc.select("div.m-result");
+        Elements ulList = JsoupUtil.getDocument(url, 1, 3000, true, "div.m-result");
         JXDocument jxd = new JXDocument(ulList);
 
         // 商品列表
@@ -107,28 +96,23 @@ public class Demo8 {
     /**
      * 考拉列表（表达式版）
      */
-    public static void kaolaSelec() {
+    public static void kaolaSelect() {
 
         // 关键字
         String input = "神仙水";
         // 需要爬取商品信息的网站地址
         String url = "https://search.kaola.com/search.html?key==" + input;
         // 提取HTML得到商品信息结果
-        Document doc = null;
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("121.237.149.63", 3000));
-
-        // doc获取整个页面的所有数据
-        Connection connection = Jsoup.connect(url).proxy(proxy);
-        connection.header("user-agent", UserAgentUtil.getRandomUserAgent());
+        Elements elements = null;
         try {
-            doc = connection.get();
+            elements = JsoupUtil.getDocument(url, 3000, "div.m-result ul.clearfix li.goods", true, null);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         //输出doc可以看到所获取到的页面源代码
 //        System.out.println(doc);
         // 通过浏览器查看商品页面的源代码，找到信息所在的div标签，再对其进行一步一步地解析
-        Elements elements = doc.select("div.m-result ul.clearfix li.goods");
         // 商品列表
         for(Element element : elements) {
             System.out.println("---------------------- 分隔 ----------------------");
@@ -166,8 +150,11 @@ public class Demo8 {
             String origin = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='goodsinfo clearfix'] span[class='proPlace ellipsis']").text());
             System.out.println("原产地: " +origin);
             // 店铺名称
-            String shopName = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='selfflag'] a").text());
+            String shopName = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='selfflag']").text());
             System.out.println("店铺名称: " + shopName);
+            // 店铺地址
+            String homeAddr = formatNode(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='selfflag'] a").attr("href"));
+            System.out.println("店铺地址: " + homeAddr);
         }
 
     }
@@ -216,5 +203,10 @@ public class Demo8 {
         } else {
             return str;
         }
+    }
+
+    public static void main(String[] args) {
+        kaolaSelect();
+//        kaolaXpath();
     }
 }

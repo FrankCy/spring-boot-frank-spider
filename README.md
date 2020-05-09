@@ -16,6 +16,7 @@
 ||Demo11|爬取某猫详情搜索页，辨别实际请求地址，获取真实商品列表信息|
 ||Demo12|Selenium Demo，需要本地先下载chromedriver|
 ||Demo13|爬取丝芙兰数据|
+||Demo14|爬取考拉店铺列表|
 |spring-boot-webmagic||Java爬虫框架【webmagic】Demo|
 
 

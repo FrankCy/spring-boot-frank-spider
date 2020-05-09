@@ -1,5 +1,7 @@
 package com.frank.jsoup.test.util;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -32,6 +34,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @Date: 2020-04-26 15:23
  */
+@Slf4j
 public class JsoupUtil {
 
     private static DesiredCapabilities dcaps = new DesiredCapabilities();
@@ -54,21 +57,21 @@ public class JsoupUtil {
         return new PhantomJSDriver(dcaps);
     }
 
+
     /**
      * 爬取数据工具类
-     * @param src 爬取路径
+     * @param url 爬取路径
      * @param time 找不到元素默认等待时间
      * @param sleep 抓取等待间隔
      * @param isProxy 是否使用代理
-     * @param listRangeEx 商品列表的具体位置
+     * @param targetEx 商品列表的具体位置
      * @return
      */
-    public static Elements getDocument(String src, int time, long sleep, boolean isProxy, String listRangeEx){
-        System.out.println("src --------- " + src);
-        System.out.println("listRangeEx --------- " + listRangeEx);
-
+    public static Elements getDocument(String url, int time, long sleep, boolean isProxy, String targetEx){
+        System.out.println("爬取的地址：" + url);
+        System.out.println("爬取的选择表达式：" + targetEx);
         if(isProxy) {
-            String proxyInfo = "";
+            String proxyInfo = "121.237.149.159:3000";
             // 设置代理
             Proxy proxy = new Proxy();
             proxy.setHttpProxy(proxyInfo).setFtpProxy(proxyInfo).setSslProxy(proxyInfo);
@@ -82,31 +85,33 @@ public class JsoupUtil {
 
         try {
             driver.manage().timeouts().implicitlyWait(time, TimeUnit.SECONDS);
-            driver.get(src);
+            driver.get(url);
             Thread.sleep(sleep);
         } catch (InterruptedException e) {
             System.out.println("被打断错误");
         }
 
         String html = driver.getPageSource();
-        Document document = Jsoup.parse(html);
-        return document.select(listRangeEx);
+        Document doc = Jsoup.parse(html);
+        System.out.println("实际抓取到到数据HTML：" + doc.html());
+        Elements elements = doc.select(targetEx);
+        return checkResult(elements, url, targetEx);
     }
 
 
     /**
      * 爬取数据工具类
-     * @param src 爬取路径
+     * @param url 爬取路径
      * @param sleep 抓取等待间隔
      * @param targetEx 商品列表的具体位置
      * @param isProxy 代理
      * @param cookieMap cookies
      * @return
      */
-    public static Elements getDocument(String src, int sleep, String targetEx, boolean isProxy, Map<String, String> cookieMap) throws IOException {
+    public static Elements getDocument(String url, int sleep, String targetEx, boolean isProxy, Map<String, String> cookieMap) throws IOException {
+        System.out.println("爬取的地址：" + url);
+        System.out.println("爬取的选择表达式：" + targetEx);
 
-        //输入要爬取的页面
-        String url = src;
         try {
             if(sleep < 5000) {
                 sleep = 5000;
@@ -120,7 +125,7 @@ public class JsoupUtil {
         java.net.Proxy proxy = null;
         if(isProxy) {
             // 使用代理
-            proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress("", 0));
+            proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress("183.154.241.30", 4274));
         }
 
         if(cookieMap != null) {
@@ -130,6 +135,21 @@ public class JsoupUtil {
         }
 
         Elements elements = doc.select(targetEx);
+        return checkResult(elements, url, targetEx);
+    }
+
+    /**
+     * 检查结果集信息，判空
+     * @param elements
+     * @param url
+     * @param targetEx
+     * @return
+     */
+    public static Elements checkResult(Elements elements, String url, String targetEx) {
+        if(elements == null || StringUtils.isEmpty(elements.val())) {
+            System.out.println("选择器"+targetEx+"无法爬取到相关信息，地址为："+url);
+            System.out.println("爬取的实际内容为："+ elements.html());
+        }
         return elements;
     }
 
