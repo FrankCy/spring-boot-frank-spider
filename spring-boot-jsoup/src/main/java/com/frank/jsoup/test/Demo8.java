@@ -42,7 +42,7 @@ public class Demo8 {
         //输出doc可以看到所获取到的页面源代码
 //        System.out.println(doc);
         // 通过浏览器查看商品页面的源代码，找到信息所在的div标签，再对其进行一步一步地解析
-        Elements ulList = JsoupUtil.getDocument(url, 1, 3000, true, "div.m-result");
+        Elements ulList = JsoupUtil.getElements(url, 1, 3000, true, "div.m-result");
         JXDocument jxd = new JXDocument(ulList);
 
         // 商品列表
@@ -105,7 +105,7 @@ public class Demo8 {
         // 提取HTML得到商品信息结果
         Elements elements = null;
         try {
-            elements = JsoupUtil.getDocument(url, 3000, "div.m-result ul.clearfix li.goods", true, null);
+            elements = JsoupUtil.getElements(url, 3000, "div.m-result ul.clearfix li.goods", true, null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -169,7 +169,7 @@ public class Demo8 {
             String listRangeEx = "div.product";
             String goodsName = "小黑瓶";
             goodsName =  URLEncoder.encode(goodsName, "gb2312");
-            Elements elements = JsoupUtil.getDocument("https://list.tmall.com/search_product.htm?q="+goodsName, 1, 1001, false, listRangeEx);
+            Elements elements = JsoupUtil.getElements("https://list.tmall.com/search_product.htm?q="+goodsName, 1, 1001, false, listRangeEx);
 
             System.out.println(elements.size());
             for(Element e : elements) {

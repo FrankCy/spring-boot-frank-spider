@@ -23,7 +23,7 @@ public class Demo12 {
         String url = "https://www.cnblogs.com/";
         String keyword = "";
         String targetEx = "//*[@id=\"post_list\"]";
-        Elements elements = SeleniumUtil.getDocument(url, keyword, targetEx);
+        Elements elements = SeleniumUtil.getElements(url, keyword, targetEx);
         if(elements == null) {
             System.out.println("没有获取到数据！");
         }
@@ -40,7 +40,7 @@ public class Demo12 {
         String url = "http://lancome.tmall.com/i/asynSearch.htm?mid=w-14640892229-0";
         String keyword = "";
         String targetEx = "/html/body/div/div[3]";
-        Elements elements = SeleniumUtil.getDocument(url, keyword, targetEx, 20, 20000);
+        Elements elements = SeleniumUtil.getElements(url, keyword, targetEx, 20, 20000);
         if(elements == null) {
             System.out.println("没有获取到数据！");
         }

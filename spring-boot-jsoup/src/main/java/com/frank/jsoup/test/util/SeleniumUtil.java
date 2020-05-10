@@ -34,7 +34,7 @@ public class SeleniumUtil {
      * @param targetEx
      * @return
      */
-    public static Elements getDocument(String url, String keyword, String targetEx) {
+    public static Elements getElements(String url, String keyword, String targetEx) {
         System.setProperty("webdriver.chrome.driver", "/Users/cy/operation-tools/chromedriver/chromedriver");
         //ChromeDriver服务地址
         ArrayList<String> command = new ArrayList<String>();
@@ -68,7 +68,7 @@ public class SeleniumUtil {
      * @param sleep
      * @return
      */
-    public static Elements getDocument(String url, String keyword, String targetEx, int time, long sleep) {
+    public static Elements getElements(String url, String keyword, String targetEx, int time, long sleep) {
         System.setProperty("webdriver.chrome.driver", "/Users/cy/operation-tools/chromedriver/chromedriver");
         //ChromeDriver服务地址
         ChromeOptions options = new ChromeOptions();

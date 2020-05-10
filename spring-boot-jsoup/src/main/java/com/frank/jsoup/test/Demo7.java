@@ -15,7 +15,7 @@ public class Demo7 {
 
     public static void main(String[] args) {
         try {
-            Elements elements = JsoupUtil.getDocument("https://item.jd.com/63512697584.html", 1, 1001, false, "[class='price']");
+            Elements elements = JsoupUtil.getElements("https://item.jd.com/63512697584.html", 1, 1001, false, "[class='price']");
             System.out.println(elements);
         } catch (Exception e) {
             e.printStackTrace();

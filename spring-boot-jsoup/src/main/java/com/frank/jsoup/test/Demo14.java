@@ -23,7 +23,7 @@ public class Demo14 {
             String listRangeEx = "li.goods";
             String goodsName = "神仙水";
             String url = "https://mall.kaola.com/search.html?shopId=36098255&key=";
-            Elements elements = JsoupUtil.getDocument(url+goodsName, 1000, listRangeEx, true, null);
+            Elements elements = JsoupUtil.getElements(url+goodsName, 1000, listRangeEx, true, null);
 
             System.out.println(elements.size());
             for(Element e : elements) {

@@ -37,7 +37,7 @@ public class Demo11 {
         //输入要爬取的页面
         String url = "https://store.taobao.com/search.htm?user_number_id=2360209412&keyword=%C0%BC%DE%A2";
         String targetEx = "input#J_ShopAsynSearchURL";
-        Elements elements = JsoupUtil.getDocument(url, 5000, targetEx, false, null);
+        Elements elements = JsoupUtil.getElements(url, 5000, targetEx, false, null);
         for(Element e : elements) {
             System.out.println(e.html() + " ------------------ ");
             System.out.println(e.val());
@@ -61,8 +61,8 @@ public class Demo11 {
         System.out.println("店铺实际展示数据的地址为："+ searchUrl);
 
         // 获取实际请求地址的Cookie信息，然后请求目标对象（程序获取的Cookie不可用，自己根据浏览器调试模式拿到）cookie key v组装的map传递进去就好用，tmall厉害！
-//        Elements realElements = JsoupUtil.getDocument(searchUrl, 10, 5000,  "163.204.218.144:4242","body");
-        Elements realElements = JsoupUtil.getDocument(searchUrl, 5000, "body", false, null);
+//        Elements realElements = JsoupUtil.getElements(searchUrl, 10, 5000,  "163.204.218.144:4242","body");
+        Elements realElements = JsoupUtil.getElements(searchUrl, 5000, "body", false, null);
 
         JXDocument jxd = new JXDocument(realElements);
 

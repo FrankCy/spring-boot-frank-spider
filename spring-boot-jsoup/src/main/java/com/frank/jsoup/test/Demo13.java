@@ -21,7 +21,7 @@ public class Demo13 {
             String goodsName = "小黑瓶";
 //            goodsName =  URLEncoder.encode(goodsName, "gb2312");
             System.out.println("goodsName: " + goodsName);
-            Elements elements = JsoupUtil.getDocument("https://www.sephora.cn/search/?k="+goodsName, 1000, listRangeEx, false, null);
+            Elements elements = JsoupUtil.getElements("https://www.sephora.cn/search/?k="+goodsName, 1000, listRangeEx, false, null);
 
             System.out.println(elements.size());
             for(Element e : elements) {

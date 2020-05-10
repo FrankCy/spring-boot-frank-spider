@@ -67,7 +67,7 @@ public class JsoupUtil {
      * @param targetEx 商品列表的具体位置
      * @return
      */
-    public static Elements getDocument(String url, int time, long sleep, boolean isProxy, String targetEx){
+    public static Elements getElements(String url, int time, long sleep, boolean isProxy, String targetEx){
         System.out.println("爬取的地址：" + url);
         System.out.println("爬取的选择表达式：" + targetEx);
         if(isProxy) {
@@ -108,7 +108,7 @@ public class JsoupUtil {
      * @param cookieMap cookies
      * @return
      */
-    public static Elements getDocument(String url, int sleep, String targetEx, boolean isProxy, Map<String, String> cookieMap) throws IOException {
+    public static Elements getElements(String url, int sleep, String targetEx, boolean isProxy, Map<String, String> cookieMap) throws IOException {
         System.out.println("爬取的地址：" + url);
         System.out.println("爬取的选择表达式：" + targetEx);
 
@@ -125,7 +125,7 @@ public class JsoupUtil {
         java.net.Proxy proxy = null;
         if(isProxy) {
             // 使用代理
-            proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress("183.154.241.30", 4274));
+            proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress("58.218.92.87", 4619));
         }
 
         if(cookieMap != null) {
@@ -146,7 +146,7 @@ public class JsoupUtil {
      * @return
      */
     public static Elements checkResult(Elements elements, String url, String targetEx) {
-        if(elements == null || StringUtils.isEmpty(elements.val())) {
+        if(elements == null || StringUtils.isEmpty(elements.html())) {
             System.out.println("选择器"+targetEx+"无法爬取到相关信息，地址为："+url);
             System.out.println("爬取的实际内容为："+ elements.html());
         }
@@ -190,6 +190,15 @@ public class JsoupUtil {
         return list.get(0).toString();
     }
 
+    public static String formatNode(String str) {
+        if(StringUtils.isEmpty(str)) {
+            return "";
+        } else {
+            return str;
+        }
+    }
+
+
     public static void main(String[] args) {
         String goods = "商品名称";
         try {
@@ -198,6 +207,40 @@ public class JsoupUtil {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 爬取数据工具类
+     * @param src 爬取路径
+     * @param time 找不到元素默认等待时间
+     * @param sleep 抓取等待间隔
+     * @param isProxy 是否使用代理
+     * @return
+     */
+    public static WebDriver getWebDriver(String src, int time, long sleep, boolean isProxy){
+
+        if(isProxy) {
+            String proxyInfo = "58.218.92.172:10366";
+            // 设置代理
+            Proxy proxy = new Proxy();
+            proxy.setHttpProxy(proxyInfo).setFtpProxy(proxyInfo).setSslProxy(proxyInfo);
+            dcaps.setCapability(CapabilityType.ForSeleniumServer.AVOIDING_PROXY, true);
+            dcaps.setCapability(CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC, true);
+            System.setProperty("http.nonProxyHosts", "localhost");
+            dcaps.setCapability(CapabilityType.PROXY, proxy);
+        }
+
+        driver = getDriver();
+
+        try {
+            driver.manage().timeouts().implicitlyWait(time, TimeUnit.SECONDS);
+            driver.get(src);
+            Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+            System.out.println("被打断错误");
+        }
+
+        return driver;
     }
 
 }
