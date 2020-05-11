@@ -57,7 +57,6 @@ public class JsoupUtil {
         return new PhantomJSDriver(dcaps);
     }
 
-
     /**
      * 爬取数据工具类
      * @param url 爬取路径
@@ -125,7 +124,7 @@ public class JsoupUtil {
         java.net.Proxy proxy = null;
         if(isProxy) {
             // 使用代理
-            proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress("58.218.92.87", 4619));
+            proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress("58.218.214.152", 8444));
         }
 
         if(cookieMap != null) {
@@ -136,6 +135,27 @@ public class JsoupUtil {
 
         Elements elements = doc.select(targetEx);
         return checkResult(elements, url, targetEx);
+    }
+
+    /**
+     * 爬取数据工具类
+     * @param isProxy 是否使用代理
+     * @return
+     */
+    public static WebDriver getDriver( boolean isProxy){
+        if(isProxy) {
+            String proxyInfo = "121.237.149.159:3000";
+            // 设置代理
+            Proxy proxy = new Proxy();
+            proxy.setHttpProxy(proxyInfo).setFtpProxy(proxyInfo).setSslProxy(proxyInfo);
+            dcaps.setCapability(CapabilityType.ForSeleniumServer.AVOIDING_PROXY, true);
+            dcaps.setCapability(CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC, true);
+            System.setProperty("http.nonProxyHosts", "localhost");
+            dcaps.setCapability(CapabilityType.PROXY, proxy);
+        }
+        driver = getDriver();
+
+        return driver;
     }
 
     /**

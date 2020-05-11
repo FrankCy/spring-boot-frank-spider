@@ -3,11 +3,11 @@ package com.frank.jsoup.test;
 import com.frank.jsoup.test.util.JsoupUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class Demo15 {
      * 图片URL获取下载
      *
      */
-    public static void kaolaImgComment() throws IOException {
+    public static void kaolaImgComment() throws IOException,InterruptedException {
 
         // 商品关键字
         String goodsKeywords = "神仙水";
@@ -80,7 +80,7 @@ public class Demo15 {
 
             Elements goodsInfoByShopElements = getGoodsInfoByShop(realUrl);
             System.out.println("商品在店铺中结果集有：" + goodsInfoByShopElements.size() + "个");
-            System.out.println("商品在店铺中结果集为：" + goodsInfoByShopElements.html());
+            //System.out.println("商品在店铺中结果集为：" + goodsInfoByShopElements.html());
 
             for(Element goodsInfoByShopElement : goodsInfoByShopElements) {
                 // 标题
@@ -89,45 +89,62 @@ public class Demo15 {
                 // 商品详情地址
                 String goodsDetailUrl = JsoupUtil.formatNode(goodsInfoByShopElement.select("div[class='goodswrap promotion'] a").attr("href"));
                 System.out.println("商品详情地址：" + goodsDetailUrl);
-                // 请求商品详情，获取商品详情页面
+                // 组装详情页请求地址
                 String goodsDetailRealUrl = "https:"+goodsDetailUrl;
 
+                // 通过WebDriver获取详情页面
+                WebDriver webDriver = JsoupUtil.getDriver(false);
+                // 请求商品详情，获取商品详情页面
+                webDriver.get(goodsDetailRealUrl);
+                Thread.sleep(1000);
+                WebElement detailElement = null;
 
-                Elements goodsInfo = JsoupUtil.getElements(goodsDetailRealUrl, 3000, "body", true, null);
-                System.out.println("goodsInfo.html() -------- " + goodsInfo.html());
-                if(goodsInfo == null || goodsInfo.size() != 1) {
-                    System.out.println("地址【"+goodsDetailRealUrl+"】无效，无法找到数据！");
-                    continue;
+                try {
+                    detailElement = webDriver.findElement(By.xpath("//*[@id=\"j-producthead\"]/div[1]/dl"));
+                } catch (NoSuchElementException e) {
+                    e.printStackTrace();
+                    System.out.println("详情为空");
                 }
-                Element goodsRealInfo = goodsInfo.get(0);
-
-                // 获取商品头信息（轮播图和商品头展示信息）
-                Elements goodsInfoWrap = goodsRealInfo.select("div.PInfoWrap");
-                System.out.println("goodsInfoWrap.html() -------- " + goodsInfo.html());
-                if(goodsInfoWrap == null || goodsInfoWrap.size() != 1) {
-                    System.out.println("goodsInfoWrap 内容获取失败");
-                    continue;
-                }
-
-                // 获取商品详情信息
-                Elements goodsDetail = goodsRealInfo.select("div.goodsDetail");
-                System.out.println("goodsDetail.html() -------- " + goodsDetail.html());
-                if(goodsDetail == null || goodsDetail.size() != 1) {
-                    System.out.println("goodsDetail 内容获取失败");
+                if(detailElement == null) {
+                    System.out.println("xPath无效或代理失效，无法取得详情信息");
                     continue;
                 }
 
-                // ** 获取评论信息（要先模拟一次点击时间）
-                // 首先将结果转换成document
-                Document document = Jsoup.parse(goodsRealInfo.html());
-                Elements userating = document.select("div[class='j-userratingTab j-navtab'].click()");
-                System.out.println("elements.html() -------- " + goodsDetail.html());
-                if(goodsDetail == null || goodsDetail.size() != 1) {
-                    System.out.println("goodsDetail 内容获取失败");
-                    continue;
+                try {
+                    // 详情标题
+                    String goodsTitle = isEmpty(detailElement.findElement(By.xpath("//*[@id=\"j-producthead\"]/div[1]/dl/dt[3]/span")));
+                    System.out.println("详情标题 ：" + goodsTitle);
+                } catch (NoSuchElementException e) {
+                    e.printStackTrace();
+                    System.out.println("详情标题为空");
                 }
-                //document.getElementsByClass("j-userratingTab j-navtab ");
 
+                try {
+                    // 折扣
+                    String discount = isEmpty(detailElement.findElement(By.xpath("//*[@id=\"j-producthead\"]/div[1]/dl/dd[2]/div[1]/div/span[2]")));
+                    System.out.println("折扣 ：" + discount);
+                } catch (NoSuchElementException e) {
+                    e.printStackTrace();
+                    System.out.println("折扣为空");
+                }
+
+                try {
+                    // 售价
+                    String currentPrice = isEmpty(detailElement.findElement(By.xpath("//*[@id=\"j-producthead\"]/div[1]/dl/dd[2]/div[1]/div/span[1]/span")));
+                    System.out.println("售价 ：" + currentPrice);
+                } catch (NoSuchElementException e) {
+                    e.printStackTrace();
+                    System.out.println("售价为空");
+                }
+
+                try {
+                    // 参考价
+                    String marketPrice = isEmpty(detailElement.findElement(By.xpath("//*[@id=\"j-producthead\"]/div[1]/dl/dd[2]/div[1]/div/span[3]/span")));
+                    System.out.println("参考价 ：" + marketPrice);
+                } catch (NoSuchElementException e) {
+                    e.printStackTrace();
+                    System.out.println("参考价为空");
+                }
             }
         }
 
@@ -155,7 +172,19 @@ public class Demo15 {
         System.out.println("结束在商店内搜索商品【" + url + "】");
     }
 
-    public static void main(String[] args) throws IOException {
+    /**
+     * 判断获取内容是否为空，为空返回""
+     * @param webElement
+     * @return
+     */
+    public static String isEmpty(WebElement webElement) {
+        if(webElement == null) {
+            return "";
+        }
+        return webElement.getText();
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException {
         kaolaImgComment();
     }
 
