@@ -3,7 +3,6 @@ package com.frank.jsoup.test.util;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Proxy;
@@ -12,7 +11,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -35,13 +33,7 @@ public class SeleniumUtil {
      * @return
      */
     public static Elements getElements(String url, String keyword, String targetEx) {
-        System.setProperty("webdriver.chrome.driver", "/Users/cy/operation-tools/chromedriver/chromedriver");
-        //ChromeDriver服务地址
-        ArrayList<String> command = new ArrayList<String>();
-        //command.add("--headless");
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments(command);
-        WebDriver driver = new ChromeDriver(options);
+        WebDriver driver = getChromeDriver(false);
         try{
             driver.manage().window().setSize(new Dimension(1920,1080));
             driver.get(url);
@@ -69,23 +61,8 @@ public class SeleniumUtil {
      * @return
      */
     public static Elements getElements(String url, String keyword, String targetEx, int time, long sleep) {
-        System.setProperty("webdriver.chrome.driver", "/Users/cy/operation-tools/chromedriver/chromedriver");
-        //ChromeDriver服务地址
-        ChromeOptions options = new ChromeOptions();
-        //取消 chrome正受到自动测试软件的控制的信息栏
-        options.addArguments("disable-infobars");
-        options.setExperimentalOption("useAutomationExtension", false);
-        options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
 
-        String proxyIpAndPort= "122.188.240.46:4254";
-        Proxy proxy = new Proxy();
-        proxy.setHttpProxy(proxyIpAndPort).setFtpProxy(proxyIpAndPort).setSslProxy(proxyIpAndPort);
-        options.setCapability(CapabilityType.ForSeleniumServer.AVOIDING_PROXY, true);
-        options.setCapability(CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC, true);
-        options.setProxy(proxy);
-        System.setProperty("http.nonProxyHosts", "localhost");
-
-        WebDriver driver = new ChromeDriver(options);
+        WebDriver driver = getChromeDriver(false);
         try{
             driver.manage().window().maximize();
 //            driver.manage().window().setSize(new Dimension(1920,1080));
@@ -105,5 +82,41 @@ public class SeleniumUtil {
             driver.quit();
         }
         return null;
+    }
+
+    /**
+     * 获取ChromeDriver，传递是否使用代理
+     * @param isProxy
+     * @return
+     */
+    public static WebDriver getChromeDriver(boolean isProxy) {
+        System.setProperty("webdriver.chrome.driver", "/Users/cy/operation-tools/chromedriver/chromedriver");
+        //ChromeDriver服务地址
+        ChromeOptions options = new ChromeOptions();
+        //取消 chrome正受到自动测试软件的控制的信息栏
+        options.addArguments("disable-infobars");
+        options.setExperimentalOption("useAutomationExtension", false);
+        options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
+
+        String proxyIpAndPort = "";
+        Proxy proxy = null;
+        if(isProxy) {
+            proxyIpAndPort = "58.218.214.135:2656";
+            proxy = new Proxy();
+            proxy.setHttpProxy(proxyIpAndPort).setFtpProxy(proxyIpAndPort).setSslProxy(proxyIpAndPort);
+            options.setProxy(proxy);
+        }
+
+        options.setCapability(CapabilityType.ForSeleniumServer.AVOIDING_PROXY, true);
+        options.setCapability(CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC, true);
+        //(1) NONE: 当html下载完成之后，不等待解析完成，selenium会直接返回
+        //(2) EAGER: 要等待整个dom树加载完成，即DOMContentLoaded这个事件完成，仅对html的内容进行下载解析
+        //(3) NORMAL: 即正常情况下，selenium会等待整个界面加载完成（指对html和子资源的下载与解析,如JS文件，图片等，不包括ajax）
+        //options.setPageLoadStrategy(PageLoadStrategy.EAGER);
+        System.setProperty("http.nonProxyHosts", "localhost");
+
+        WebDriver driver = new ChromeDriver(options);
+
+        return driver;
     }
 }

@@ -5,9 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.io.IOException;
@@ -24,7 +21,7 @@ import java.io.IOException;
 public class Demo15 {
 
     /**
-     * 获取考拉图片和评论信息
+     * 获取考la图片和评论信息
      *
      * 要求：
      * 指定商品全平台店铺信息
@@ -65,10 +62,9 @@ public class Demo15 {
             String commentCount = JsoupUtil.formatNode(shop.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='goodsinfo clearfix'] a[class='comments']").text());
             System.out.println("评论信息（总评论数）:" +commentCount);
 
-
-            /************************************************************ 分隔【爬取商品详情】*************************************************************/
+            //************************************************************ 分隔【爬取商品详情】*************************************************************//*
             if(StringUtils.isEmpty(goodsShopUrl)) {
-                // 当店铺为空时，是考拉旗舰店，不考虑，直接下一个 OR 直接访问商品详情（旗舰店的），把数据抓取保存
+                // 当店铺为空时，是考la旗舰店，不考虑，直接下一个 OR 直接访问商品详情（旗舰店的），把数据抓取保存
                 continue;
             }
             // 地址 goodsShopUrl
@@ -82,6 +78,7 @@ public class Demo15 {
             System.out.println("商品在店铺中结果集有：" + goodsInfoByShopElements.size() + "个");
             //System.out.println("商品在店铺中结果集为：" + goodsInfoByShopElements.html());
 
+            /*
             for(Element goodsInfoByShopElement : goodsInfoByShopElements) {
                 // 标题
                 String title = JsoupUtil.formatNode(goodsInfoByShopElement.select("div[class='goodswrap promotion'] a").attr("title"));
@@ -95,6 +92,7 @@ public class Demo15 {
                 // 通过WebDriver获取详情页面
                 WebDriver webDriver = JsoupUtil.getDriver(false);
                 // 请求商品详情，获取商品详情页面
+                System.out.println("商品详情真实地址为：" + goodsDetailRealUrl);
                 webDriver.get(goodsDetailRealUrl);
                 Thread.sleep(1000);
                 WebElement detailElement = null;
@@ -145,7 +143,7 @@ public class Demo15 {
                     e.printStackTrace();
                     System.out.println("参考价为空");
                 }
-            }
+            }*/
         }
 
         // 根据详情爬取评论和图片

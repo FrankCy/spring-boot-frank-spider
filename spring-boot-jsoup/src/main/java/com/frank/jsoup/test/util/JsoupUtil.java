@@ -124,7 +124,7 @@ public class JsoupUtil {
         java.net.Proxy proxy = null;
         if(isProxy) {
             // 使用代理
-            proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress("58.218.214.152", 8444));
+            proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress("58.218.92.91", 8900));
         }
 
         if(cookieMap != null) {
@@ -144,7 +144,7 @@ public class JsoupUtil {
      */
     public static WebDriver getDriver( boolean isProxy){
         if(isProxy) {
-            String proxyInfo = "121.237.149.159:3000";
+            String proxyInfo = "58.218.92.30:15684";
             // 设置代理
             Proxy proxy = new Proxy();
             proxy.setHttpProxy(proxyInfo).setFtpProxy(proxyInfo).setSslProxy(proxyInfo);

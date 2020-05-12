@@ -30,7 +30,7 @@ import java.util.List;
 public class Demo8 {
 
     /**
-     * 考拉列表（Xpath版）
+     * 考la列表（Xpath版）
      */
     public static void kaolaXpath() {
 
@@ -94,7 +94,7 @@ public class Demo8 {
     }
 
     /**
-     * 考拉列表（表达式版）
+     * 考la列表（表达式版）
      */
     public static void kaolaSelect() {
 

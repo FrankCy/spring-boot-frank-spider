@@ -15,7 +15,7 @@ import org.jsoup.select.Elements;
 public class Demo14 {
 
     /**
-     * 模拟考拉店铺搜索商品，并获取商品列表信息
+     * 模拟考la店铺搜索商品，并获取商品列表信息
      */
     public static void kaolaShopListDetail() {
         try {
