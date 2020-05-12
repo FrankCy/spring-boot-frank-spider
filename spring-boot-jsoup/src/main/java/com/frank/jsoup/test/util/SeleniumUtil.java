@@ -101,14 +101,18 @@ public class SeleniumUtil {
         String proxyIpAndPort = "";
         Proxy proxy = null;
         if(isProxy) {
-            proxyIpAndPort = "58.218.214.135:2656";
+            proxyIpAndPort = "58.218.214.130:2036";
             proxy = new Proxy();
             proxy.setHttpProxy(proxyIpAndPort).setFtpProxy(proxyIpAndPort).setSslProxy(proxyIpAndPort);
             options.setProxy(proxy);
         }
 
+
         options.setCapability(CapabilityType.ForSeleniumServer.AVOIDING_PROXY, true);
         options.setCapability(CapabilityType.ForSeleniumServer.ONLY_PROXYING_SELENIUM_TRAFFIC, true);
+        //设置不弹出ChromeDriver模拟器
+        //options.addArguments("--headless");
+        //options.addArguments("--disable-gpu");
         //(1) NONE: 当html下载完成之后，不等待解析完成，selenium会直接返回
         //(2) EAGER: 要等待整个dom树加载完成，即DOMContentLoaded这个事件完成，仅对html的内容进行下载解析
         //(3) NORMAL: 即正常情况下，selenium会等待整个界面加载完成（指对html和子资源的下载与解析,如JS文件，图片等，不包括ajax）
