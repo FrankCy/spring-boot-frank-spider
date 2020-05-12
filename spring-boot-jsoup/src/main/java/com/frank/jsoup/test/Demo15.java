@@ -1,13 +1,17 @@
 package com.frank.jsoup.test;
 
 import com.frank.jsoup.test.util.JsoupUtil;
+import com.frank.jsoup.test.util.SeleniumUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @ProjectName: spring-boot-frank-spider
@@ -33,7 +37,7 @@ public class Demo15 {
      * 图片URL获取下载
      *
      */
-    public static void kaolaImgComment() throws IOException,InterruptedException {
+    public static void kaolaSipder() throws IOException,InterruptedException {
 
         // 商品关键字
         String goodsKeywords = "神仙水";
@@ -45,21 +49,21 @@ public class Demo15 {
         String platformSearchUrl = "https://search.kaola.com/search.html?key=";
 
         // 店铺信息
-        Elements shopsElements = getShops(platformSearchUrl, goodsKeywords);
+        List<WebElement> shopsElements = getWebElement(platformSearchUrl+goodsKeywords);
         System.out.println("找到"+ shopsElements.size() + "个店铺");
 
-        for(Element shop : shopsElements) {
+        for(WebElement shop : shopsElements) {
             // 店铺名称
-            String shopName = JsoupUtil.formatNode(shop.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='selfflag']").text());
+            String shopName = SeleniumUtil.getInfo(shop, "div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='selfflag']");
             System.out.println("店铺名称:" + shopName);
             // 商品名称
-            String goodsName = JsoupUtil.formatNode(shop.select("div[class='goodswrap promotion'] div[class='desc clearfix'] div[class='titlewrap'] a[class='title']").text());
+            String goodsName = SeleniumUtil.getInfo(shop, "div[class='goodswrap promotion'] div[class='desc clearfix'] div[class='titlewrap'] a[class='title']");
             System.out.println("商品名称:" + goodsName);
             // 商品店铺地址
-            String goodsShopUrl = JsoupUtil.formatNode(shop.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='selfflag'] a").attr("href"));
+            String goodsShopUrl = SeleniumUtil.getInfo(shop, "div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='selfflag'] a");
             System.out.println("商品店铺地址:" + goodsShopUrl);
             // 评论信息（总评论数）
-            String commentCount = JsoupUtil.formatNode(shop.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='goodsinfo clearfix'] a[class='comments']").text());
+            String commentCount = SeleniumUtil.getInfo(shop, "div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='goodsinfo clearfix'] a[class='comments']");
             System.out.println("评论信息（总评论数）:" +commentCount);
 
             //************************************************************ 分隔【爬取商品详情】*************************************************************//*
@@ -72,13 +76,16 @@ public class Demo15 {
             // kaola店铺主键
             String kaolaShopId = homeAddrArr[homeAddrArr.length - 1];
             // 固定格式，后期优化
-            String realUrl = "https://mall.kaola.com/search.html?shopId="+kaolaShopId;
+            String realUrl = "https://mall.kaola.com/search.html?shopId="+kaolaShopId+"&key="+goodsKeywords;
 
-            Elements goodsInfoByShopElements = getGoodsInfoByShop(realUrl);
+            List<WebElement> goodsInfoByShopElements = getWebElement(realUrl);
+            if(goodsInfoByShopElements == null || goodsInfoByShopElements.size() == 0) {
+                System.out.println("地址：" + realUrl + "的店铺无法搜索到商品信息");
+                continue;
+            }
             System.out.println("商品在店铺中结果集有：" + goodsInfoByShopElements.size() + "个");
-            //System.out.println("商品在店铺中结果集为：" + goodsInfoByShopElements.html());
 
-            /*
+/*
             for(Element goodsInfoByShopElement : goodsInfoByShopElements) {
                 // 标题
                 String title = JsoupUtil.formatNode(goodsInfoByShopElement.select("div[class='goodswrap promotion'] a").attr("title"));
@@ -90,7 +97,7 @@ public class Demo15 {
                 String goodsDetailRealUrl = "https:"+goodsDetailUrl;
 
                 // 通过WebDriver获取详情页面
-                WebDriver webDriver = JsoupUtil.getDriver(false);
+                WebDriver webDriver = SeleniumUtil.getChromeDriver(true);
                 // 请求商品详情，获取商品详情页面
                 System.out.println("商品详情真实地址为：" + goodsDetailRealUrl);
                 webDriver.get(goodsDetailRealUrl);
@@ -143,25 +150,28 @@ public class Demo15 {
                     e.printStackTrace();
                     System.out.println("参考价为空");
                 }
-            }*/
+            }
+
+            */
         }
 
         // 根据详情爬取评论和图片
     }
 
-    public static Elements getShops(String url, String goodsKeywords) throws IOException {
-        url = url+goodsKeywords;
-        System.out.println("开始爬取商店信息 【" + url + "】");
-        Elements shopsElements = JsoupUtil.getElements(url, 3000, "div.m-result ul.clearfix li.goods", true, null);
-        System.out.println("结束爬取商店信息【" + url + "】");
-        return shopsElements;
-    }
+    public static List<WebElement> getWebElement(String url) throws IOException, InterruptedException {
+        // 获取webDriver，传递参数是否使用代理
+        WebDriver webDriver = SeleniumUtil.getChromeDriver(true);
+        webDriver.manage().window().maximize();
+        webDriver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        webDriver.get(url);
+        Thread.sleep(3000);
 
-    public static Elements getGoodsInfoByShop(String url) throws IOException {
-        System.out.println("开始在商店内搜索商品【" + url + "】");
-        Elements goodsDetailByShopElements = JsoupUtil.getElements(url, 3000, "div.m-result ul.clearfix li.goods", true, null);
-        System.out.println("结束在商店内搜索商品【" + url + "】");
-        return goodsDetailByShopElements;
+        List<WebElement> goodsWebElements = webDriver.findElements(By.cssSelector("div.m-result ul.clearfix li.goods"));
+        if(goodsWebElements == null || goodsWebElements.size() == 0) {
+            System.out.println("未在店铺找到对应商品信息");
+            return null;
+        }
+        return goodsWebElements;
     }
 
     public static void getGoodsDetail(String url) throws IOException {
@@ -170,20 +180,8 @@ public class Demo15 {
         System.out.println("结束在商店内搜索商品【" + url + "】");
     }
 
-    /**
-     * 判断获取内容是否为空，为空返回""
-     * @param webElement
-     * @return
-     */
-    public static String isEmpty(WebElement webElement) {
-        if(webElement == null) {
-            return "";
-        }
-        return webElement.getText();
-    }
-
     public static void main(String[] args) throws IOException, InterruptedException {
-        kaolaImgComment();
+        kaolaSipder();
     }
 
 }

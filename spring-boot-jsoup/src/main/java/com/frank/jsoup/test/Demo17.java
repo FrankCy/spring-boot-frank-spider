@@ -42,21 +42,21 @@ public class Demo17 {
         }
         //System.out.println("商品头信息：" + goodsHeader.getText());
         try {
-            System.out.println("标题 : " + getInfo(goodsHeader,"dt.product-title > span"));
-            System.out.println("描述 : " + getInfo(goodsHeader,"dt.subTit"));
-            System.out.println("售价 : " + getInfo(goodsHeader, "dd.m-price-wrap > div.m-price > div > span.PInfo_r.currentPrice > span"));
-            System.out.println("特价标 : " + getInfo(goodsHeader, "dd.m-price-wrap > div.m-price > div > span.m-memberLabel"));
-            System.out.println("参考价 : " +  getInfo(goodsHeader,"dd.m-price-wrap > div.m-price > div > span.PInfo_r.marketPrice.addprice.j-marketprice > span"));
-            System.out.println("新人价 : " + getInfo(goodsHeader,"dd.m-price-wrap > div.m-price > div > span.PInfo_r.newuserprice.nd___highlighted"));
-            System.out.println("考拉价 : " + getInfo(goodsHeader,"dd.m-price-wrap > div.m-price > div > span.kaolaprice"));
-            System.out.println("分期信息 : " + getInfo(goodsHeader,"dd.m-price-wrap > div.m-huabei-wrap"));
-            System.out.println("黑卡会员预计节省金额 : " + getInfo(goodsHeader,"dd.m-price-wrap > div.m-vipmember > div:nth-child(1) > span > i"));
-            System.out.println("满减折扣 : " + getInfo(goodsHeader,"dd.m-price-wrap > div.m-vipmember > div:nth-child(2) > span"));
-            System.out.println("津贴信息 : " + getInfo(goodsHeader,"dd.m-price-wrap > div.m-allowance > span"));
-            System.out.println("星级评价 : " + getInfo(goodsHeader,"dd.m-comment-bar.j-commentbar > span.emptyStar.percentStar > i"));
-            System.out.println("评价度 : " + getInfo(goodsHeader,"dd.m-comment-bar.j-commentbar > span.goodPercent"));
-            System.out.println("评价人数 : " + getInfo(goodsHeader,"dd.m-comment-bar.j-commentbar > span.comnum.comm > a"));
-            System.out.println("晒单人数 : " + getInfo(goodsHeader,"dd.m-comment-bar.j-commentbar > span.commWithImg.comm > a"));
+            System.out.println("标题 : " + SeleniumUtil.getInfo(goodsHeader,"dt.product-title > span"));
+            System.out.println("描述 : " + SeleniumUtil.getInfo(goodsHeader,"dt.subTit"));
+            System.out.println("售价 : " + SeleniumUtil.getInfo(goodsHeader, "dd.m-price-wrap > div.m-price > div > span.PInfo_r.currentPrice > span"));
+            System.out.println("特价标 : " + SeleniumUtil.getInfo(goodsHeader, "dd.m-price-wrap > div.m-price > div > span.m-memberLabel"));
+            System.out.println("参考价 : " +  SeleniumUtil.getInfo(goodsHeader,"dd.m-price-wrap > div.m-price > div > span.PInfo_r.marketPrice.addprice.j-marketprice > span"));
+            System.out.println("新人价 : " + SeleniumUtil.getInfo(goodsHeader,"dd.m-price-wrap > div.m-price > div > span.PInfo_r.newuserprice.nd___highlighted"));
+            System.out.println("考拉价 : " + SeleniumUtil.getInfo(goodsHeader,"dd.m-price-wrap > div.m-price > div > span.kaolaprice"));
+            System.out.println("分期信息 : " + SeleniumUtil.getInfo(goodsHeader,"dd.m-price-wrap > div.m-huabei-wrap"));
+            System.out.println("黑卡会员预计节省金额 : " + SeleniumUtil.getInfo(goodsHeader,"dd.m-price-wrap > div.m-vipmember > div:nth-child(1) > span > i"));
+            System.out.println("满减折扣 : " + SeleniumUtil.getInfo(goodsHeader,"dd.m-price-wrap > div.m-vipmember > div:nth-child(2) > span"));
+            System.out.println("津贴信息 : " + SeleniumUtil.getInfo(goodsHeader,"dd.m-price-wrap > div.m-allowance > span"));
+            System.out.println("星级评价 : " + SeleniumUtil.getInfo(goodsHeader,"dd.m-comment-bar.j-commentbar > span.emptyStar.percentStar > i"));
+            System.out.println("评价度 : " + SeleniumUtil.getInfo(goodsHeader,"dd.m-comment-bar.j-commentbar > span.goodPercent"));
+            System.out.println("评价人数 : " + SeleniumUtil.getInfo(goodsHeader,"dd.m-comment-bar.j-commentbar > span.comnum.comm > a"));
+            System.out.println("晒单人数 : " + SeleniumUtil.getInfo(goodsHeader,"dd.m-comment-bar.j-commentbar > span.commWithImg.comm > a"));
         } catch (NoSuchElementException n) {
             System.out.println(n.getSupportUrl() + "获取内容失败");
         }
@@ -125,15 +125,6 @@ public class Demo17 {
 
         // 关闭webDriver
         webDriver.quit();
-    }
-
-    public static String getInfo(WebElement goodsHeader, String ex) {
-        try {
-            return goodsHeader.findElement(By.cssSelector(ex)).getText();
-        } catch (NoSuchElementException n) {
-            System.out.println(n.getSupportUrl() + "获取内容失败");
-        }
-        return "";
     }
 
     public static void main(String[] args) throws InterruptedException {

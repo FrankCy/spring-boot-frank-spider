@@ -31,6 +31,7 @@ public class Demo6 {
         // 提取HTML得到商品信息结果
         Document doc = null;
 
+
         /** 方式1 begin **/
         // 设置代理
         Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("119.180.173.81", 8060));

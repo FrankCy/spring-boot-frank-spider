@@ -4,9 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
@@ -101,7 +104,7 @@ public class SeleniumUtil {
         String proxyIpAndPort = "";
         Proxy proxy = null;
         if(isProxy) {
-            proxyIpAndPort = "58.218.214.130:2036";
+            proxyIpAndPort = "58.218.92.169:5898";
             proxy = new Proxy();
             proxy.setHttpProxy(proxyIpAndPort).setFtpProxy(proxyIpAndPort).setSslProxy(proxyIpAndPort);
             options.setProxy(proxy);
@@ -122,5 +125,14 @@ public class SeleniumUtil {
         WebDriver driver = new ChromeDriver(options);
 
         return driver;
+    }
+
+    public static String getInfo(WebElement goodsHeader, String ex) {
+        try {
+            return goodsHeader.findElement(By.cssSelector(ex)).getText();
+        } catch (NoSuchElementException n) {
+            System.out.println(n.getSupportUrl() + "获取内容失败");
+        }
+        return "";
     }
 }
