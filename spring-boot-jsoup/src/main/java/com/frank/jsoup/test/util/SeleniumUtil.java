@@ -104,7 +104,7 @@ public class SeleniumUtil {
         String proxyIpAndPort = "";
         Proxy proxy = null;
         if(isProxy) {
-            proxyIpAndPort = "58.218.92.169:5898";
+            proxyIpAndPort = "58.218.92.81:3550";
             proxy = new Proxy();
             proxy.setHttpProxy(proxyIpAndPort).setFtpProxy(proxyIpAndPort).setSslProxy(proxyIpAndPort);
             options.setProxy(proxy);

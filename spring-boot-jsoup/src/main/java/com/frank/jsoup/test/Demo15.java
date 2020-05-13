@@ -13,6 +13,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -57,14 +59,14 @@ public class Demo15 {
         // 平台搜索地址
         String platformSearchUrl = "https://search.kaola.com/search.html?key=";
         String realGoods = URLEncoder.encode(goodsKeywords, "utf-8");
-        Document kaolaPlatformGoodsList = HtmlUnitUtil.getHtmlUnitDocument(platformSearchUrl+realGoods, true);
+        Document kaolaPlatformGoodsList = HtmlUnitUtil.getHtmlUnitDocument(platformSearchUrl+realGoods, true, false, false);
         // 获取列表中商品所在位置
-        Elements elements = kaolaPlatformGoodsList.select("#result > li");
-        if(elements == null || elements.size() == 0) {
+        Elements platformShopsListElements = kaolaPlatformGoodsList.select("#result > li");
+        if(platformShopsListElements == null || platformShopsListElements.size() == 0) {
             System.out.println("代理失效，请更换代理后重新尝试");
             return;
         }
-        for(Element element : elements) {
+        for(Element element : platformShopsListElements) {
             System.out.println(" ---------------- shop ---------------");
             // 店铺名称
             String shopName = Optional.ofNullable(element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='selfflag']")).orElse(null).get(0).text();
@@ -97,7 +99,7 @@ public class Demo15 {
             String kaolaShopId = homeAddrArr[homeAddrArr.length - 1];
             // 固定格式，后期优化
             String realUrl = "https://mall.kaola.com/search.html?shopId="+kaolaShopId+"&key="+goodsKeywords;
-            Document shopGoodsList = HtmlUnitUtil.getHtmlUnitDocument(realUrl, true);
+            Document shopGoodsList = HtmlUnitUtil.getHtmlUnitDocument(realUrl, true, false, false);
             if(shopGoodsList == null) {
                 System.out.println("地址：" + realUrl + "的店铺无法搜索到商品信息");
                 continue;
@@ -124,22 +126,9 @@ public class Demo15 {
                 // 组装详情页请求地址
                 String goodsDetailRealUrl = "https:"+goodsDetailUrl;
                 // 请求商品详情，获取商品详情页面
-                System.out.println("商品在店铺["+shopName+"]详情真实地址为：" + goodsDetailRealUrl);
-
-                //
-                //HtmlPage htmlPage = HtmlUnitUtil.getHtmlPage(goodsDetailRealUrl, true);
-                //Thread.sleep(2000);
-                //DomNode domNode = htmlPage.querySelector("#j-producthead > div.PInfoWrap.clearfix > dl");
-                //if(domNode == null) {
-                //    System.out.println("在商品["+ shopGoodsTitile +"]详情页，无法获取商品头信息");
-                //}
-                //Document goodsHeaderDom = Jsoup.parse(domNode.asXml());
-                //System.out.println("商品详情头信息： " + goodsHeaderDom.html());
-
-
-                // 商品详情地址
-                //String goodsDetailUrl = Optional.ofNullable(shoGoodsElement.select("div[class='goodswrap promotion'] a")).orElse(null).attr("href");
-                //printHtmlVal("商品详情地址", goodsDetailUrl);
+                System.out.println("商品["+goodsName+"]在店铺["+shopName+"]详情真实地址为：" + goodsDetailRealUrl);
+                Document shopDetailInfo = HtmlUnitUtil.getHtmlUnitDocument(goodsDetailRealUrl, true, false, true);
+                System.out.println("商品详情信息 ----- \n " + shopDetailInfo.html());
 
             }
         }

@@ -2,6 +2,8 @@ package com.frank.jsoup.test.util;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
+import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.jsoup.Jsoup;
@@ -26,7 +28,7 @@ public class HtmlUnitUtil {
      * @return
      */
     public static HtmlPage getHtmlPage(String url, boolean proxy) throws IOException {
-        WebClient webClient=  initWebClient(proxy);
+        WebClient webClient = initWebClient(proxy, false, false);
         HtmlPage page = webClient.getPage(url);
         return page;
     }
@@ -37,9 +39,9 @@ public class HtmlUnitUtil {
      * @param proxy
      * @return
      */
-    public static Document getHtmlUnitDocument(String url, boolean proxy) throws IOException {
+    public static Document getHtmlUnitDocument(String url, boolean proxy, boolean isCss, boolean isJs) throws IOException {
         System.out.println("url : " + url);
-        WebClient webClient = initWebClient(proxy);
+        WebClient webClient = initWebClient(proxy, isCss, isJs);
         Document document = null;
         try {
             HtmlPage page = webClient.getPage(url);
@@ -59,24 +61,52 @@ public class HtmlUnitUtil {
 
     /**
      * 初始化WebClient
-     * @param proxy
+     * @param isProxy
+     * @param isCss
+     * @param isJs
      * @return
      */
-    public static WebClient initWebClient(boolean proxy) {
+    public static WebClient initWebClient(boolean isProxy,boolean isCss, boolean isJs) {
         WebClient webClient = null;
         // 判断是否使用代理并创建webclient,并设置对应的浏览器
-        if(proxy) {
-            webClient = new WebClient(BrowserVersion.CHROME, "58.218.214.143", 15537);
+        if(isProxy) {
+            webClient = new WebClient(BrowserVersion.CHROME, "58.218.214.129", 2915);
         } else {
             webClient = new WebClient(BrowserVersion.CHROME);
         }
-        // htmlunit 对css和javascript的支持不好，所以请关闭之
-        webClient.getOptions().setJavaScriptEnabled(false);
+        webClient.setRefreshHandler(new ThreadedRefreshHandler());
+        // 禁用css，避免二次请求CSS进行渲染
         webClient.getOptions().setCssEnabled(false);
-        // 设置超时间5000毫秒
-        webClient.getOptions().setTimeout(5000);
-        // 设置允许执行2000毫秒javascript
+        if(isCss) {
+            // 启用css
+            webClient.getOptions().setCssEnabled(true);
+        } else  {
+            // 禁用css，避免二次请求CSS进行渲染
+            webClient.getOptions().setCssEnabled(false);
+        }
+        if(isJs) {
+            // 启动js
+            webClient.getOptions().setJavaScriptEnabled(true);
+            // 设置支持Ajax
+            webClient.setAjaxController(new NicelyResynchronizingAjaxController());
+        } else {
+            webClient.getOptions().setJavaScriptEnabled(false);
+        }
+        // 当JS执行出错的时候是否抛出异常
+        webClient.getOptions().setThrowExceptionOnScriptError(false);
+        // 当HTTP的状态非200时是否抛出异常
+        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        webClient.getOptions().setRedirectEnabled(true);
+        // 设置"浏览器"超时间5000毫秒
+        webClient.getOptions().setTimeout(120000);
+        // 忽略SSL认证
+        webClient.getOptions().setUseInsecureSSL(true);
+        // 设置js执行超时时间
         webClient.setJavaScriptTimeout(5000);
+
+        webClient.setJavaScriptEngine(new MyJavaScriptEngine(webClient));
+        // 设置阻塞线程时间
+        webClient.waitForBackgroundJavaScript(4000);
         return webClient;
     }
 
