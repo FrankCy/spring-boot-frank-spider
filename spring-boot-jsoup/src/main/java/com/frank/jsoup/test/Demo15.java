@@ -59,7 +59,7 @@ public class Demo15 {
         // 平台搜索地址
         String platformSearchUrl = "https://search.kaola.com/search.html?key=";
         String realGoods = URLEncoder.encode(goodsKeywords, "utf-8");
-        Document kaolaPlatformGoodsList = HtmlUnitUtil.getHtmlUnitDocument(platformSearchUrl+realGoods, true, false, false);
+        Document kaolaPlatformGoodsList = HtmlUnitUtil.getHtmlUnitDocument(platformSearchUrl+realGoods, true, false, false, 1000);
         // 获取列表中商品所在位置
         Elements platformShopsListElements = kaolaPlatformGoodsList.select("#result > li");
         if(platformShopsListElements == null || platformShopsListElements.size() == 0) {
@@ -99,7 +99,7 @@ public class Demo15 {
             String kaolaShopId = homeAddrArr[homeAddrArr.length - 1];
             // 固定格式，后期优化
             String realUrl = "https://mall.kaola.com/search.html?shopId="+kaolaShopId+"&key="+goodsKeywords;
-            Document shopGoodsList = HtmlUnitUtil.getHtmlUnitDocument(realUrl, true, false, false);
+            Document shopGoodsList = HtmlUnitUtil.getHtmlUnitDocument(realUrl, true, false, false, 1000);
             if(shopGoodsList == null) {
                 System.out.println("地址：" + realUrl + "的店铺无法搜索到商品信息");
                 continue;
@@ -127,7 +127,7 @@ public class Demo15 {
                 String goodsDetailRealUrl = "https:"+goodsDetailUrl;
                 // 请求商品详情，获取商品详情页面
                 System.out.println("商品["+goodsName+"]在店铺["+shopName+"]详情真实地址为：" + goodsDetailRealUrl);
-                Document shopDetailInfo = HtmlUnitUtil.getHtmlUnitDocument(goodsDetailRealUrl, true, false, true);
+                Document shopDetailInfo = HtmlUnitUtil.getHtmlUnitDocument(goodsDetailRealUrl, true, false, true, 3000);
                 System.out.println("商品详情信息 ----- \n " + shopDetailInfo.html());
 
             }

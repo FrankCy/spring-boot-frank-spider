@@ -11,6 +11,7 @@ import org.jsoup.nodes.Document;
 
 import javax.net.ssl.SSLException;
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
 /**
@@ -28,7 +29,7 @@ public class HtmlUnitUtil {
      * @return
      */
     public static HtmlPage getHtmlPage(String url, boolean proxy) throws IOException {
-        WebClient webClient = initWebClient(proxy, false, false);
+        WebClient webClient = initWebClient(proxy, false, false, 2000);
         HtmlPage page = webClient.getPage(url);
         return page;
     }
@@ -39,9 +40,9 @@ public class HtmlUnitUtil {
      * @param proxy
      * @return
      */
-    public static Document getHtmlUnitDocument(String url, boolean proxy, boolean isCss, boolean isJs) throws IOException {
+    public static Document getHtmlUnitDocument(String url, boolean proxy, boolean isCss, boolean isJs, long waitForBackgroundJavaScriptTime) throws IOException {
         System.out.println("url : " + url);
-        WebClient webClient = initWebClient(proxy, isCss, isJs);
+        WebClient webClient = initWebClient(proxy, isCss, isJs, waitForBackgroundJavaScriptTime);
         Document document = null;
         try {
             HtmlPage page = webClient.getPage(url);
@@ -55,6 +56,9 @@ public class HtmlUnitUtil {
         } catch (FailingHttpStatusCodeException fhsce) {
             fhsce.printStackTrace();
             System.out.println("连接错误 ----- 请更换代理 [" + url + "]");
+        } catch (SocketException se) {
+            se.printStackTrace();
+            System.out.println("连接错误 ----- 请更换代理 [" + url + "]");
         }
         return document;
     }
@@ -66,11 +70,11 @@ public class HtmlUnitUtil {
      * @param isJs
      * @return
      */
-    public static WebClient initWebClient(boolean isProxy,boolean isCss, boolean isJs) {
+    public static WebClient initWebClient(boolean isProxy,boolean isCss, boolean isJs, long waitForBackgroundJavaScriptTime) {
         WebClient webClient = null;
         // 判断是否使用代理并创建webclient,并设置对应的浏览器
         if(isProxy) {
-            webClient = new WebClient(BrowserVersion.CHROME, "58.218.214.129", 2915);
+            webClient = new WebClient(BrowserVersion.CHROME, "58.218.92.76", 3992);
         } else {
             webClient = new WebClient(BrowserVersion.CHROME);
         }
@@ -106,7 +110,7 @@ public class HtmlUnitUtil {
 
         webClient.setJavaScriptEngine(new MyJavaScriptEngine(webClient));
         // 设置阻塞线程时间
-        webClient.waitForBackgroundJavaScript(4000);
+        webClient.waitForBackgroundJavaScript(waitForBackgroundJavaScriptTime);
         return webClient;
     }
 
