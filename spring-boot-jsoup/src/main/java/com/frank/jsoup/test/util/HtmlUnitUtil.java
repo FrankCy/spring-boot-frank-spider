@@ -6,6 +6,7 @@ import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import net.sourceforge.htmlunit.corejs.javascript.EcmaError;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -85,6 +86,9 @@ public class HtmlUnitUtil {
         } catch (ClassCastException cce) {
             cce.printStackTrace();
             System.out.println("连接错误 ----- 解析错误，无法获取到类！");
+        } catch (EcmaError ecmaError) {
+            ecmaError.printStackTrace();
+            System.out.println("解析错误 ----- 无法解析");
         }
         webClient.close();
         return document;
@@ -101,7 +105,7 @@ public class HtmlUnitUtil {
         WebClient webClient = null;
         // 判断是否使用代理并创建webclient,并设置对应的浏览器
         if(isProxy) {
-            webClient = new WebClient(BrowserVersion.CHROME, "58.218.214.156", 4941);
+            webClient = new WebClient(BrowserVersion.CHROME, "58.218.92.158", 7934);
         } else {
             webClient = new WebClient(BrowserVersion.CHROME);
         }
@@ -131,7 +135,7 @@ public class HtmlUnitUtil {
         // 允许重定向
         webClient.getOptions().setRedirectEnabled(true);
         // 设置"浏览器"超时间5000毫秒
-        webClient.getOptions().setTimeout(5000);
+        webClient.getOptions().setTimeout(12000);
         // 忽略SSL认证
         webClient.getOptions().setUseInsecureSSL(false);
         // 设置js执行超时时间

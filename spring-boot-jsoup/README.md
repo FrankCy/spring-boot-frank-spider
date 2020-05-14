@@ -43,6 +43,10 @@ Selenium Demo，需要本地先下载chromedriver
 模拟考la爬详情（包含商品头、商品评论、商品详情） ChromeDriver实现
 - Demo18
 模拟爬Jd（平台搜索列表，获取店铺信息，店铺内搜索结果）
+- Demo19
+模拟考la爬详情 HtmlUnit实现
+- Demo20
+模拟爬Jd详情（评论、图片等）
 
 
 

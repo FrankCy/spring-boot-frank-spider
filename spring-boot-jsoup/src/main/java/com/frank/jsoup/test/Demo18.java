@@ -71,7 +71,7 @@ public class Demo18 {
             String shopSearchRealUrl = "https://mall.jd.hk/view_search-1595129-"+shopCode+"-"+shopCode+"-0-0-0-0-1-1-60.html?keyword="+keyword;
             System.out.println("店铺内商品搜索地址为：" + shopSearchRealUrl);
 
-            Document shopGoodsDocument = HtmlUnitUtil.getHtmlUnitDocument(shopSearchRealUrl, true, true, true, 5000);
+            Document shopGoodsDocument = HtmlUnitUtil.getHtmlUnitDocument(shopSearchRealUrl, true, false, false, 5000);
             System.out.println("搜索结果为：" + shopGoodsDocument.html());
 
             // 获取商品在店铺搜索结果的所在位置
