@@ -1,5 +1,6 @@
 package com.frank.jsoup.test;
 
+import com.frank.jsoup.test.util.UserAgentUtil;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -27,7 +28,7 @@ public class Demo5 {
         Document doc = null;
         // doc获取整个页面的所有数据
         Connection connection = Jsoup.connect(url);
-        connection.header("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36");
+        connection.header("user-agent", UserAgentUtil.getRandomUserAgent());
         doc = connection.get();
         //输出doc可以看到所获取到的页面源代码
         System.out.println(doc);

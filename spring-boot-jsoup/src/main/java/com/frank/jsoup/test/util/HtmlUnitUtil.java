@@ -47,11 +47,12 @@ public class HtmlUnitUtil {
 
     /**
      * 获取WebClient
-     * @param url
      * @param proxy
+     * @param isCss
+     * @param isJs
      * @return
      */
-    public static WebClient getWebClient(String url, boolean proxy, boolean isCss, boolean isJs) {
+    public static WebClient getWebClient(boolean proxy, boolean isCss, boolean isJs) {
         WebClient webClient = initWebClient(proxy, isCss, isJs);
         return webClient;
     }
@@ -105,7 +106,7 @@ public class HtmlUnitUtil {
         WebClient webClient = null;
         // 判断是否使用代理并创建webclient,并设置对应的浏览器
         if(isProxy) {
-            webClient = new WebClient(BrowserVersion.CHROME, "58.218.92.158", 7934);
+            webClient = new WebClient(BrowserVersion.CHROME, "58.218.92.87", 4661);
         } else {
             webClient = new WebClient(BrowserVersion.CHROME);
         }
@@ -134,12 +135,16 @@ public class HtmlUnitUtil {
         webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
         // 允许重定向
         webClient.getOptions().setRedirectEnabled(true);
-        // 设置"浏览器"超时间5000毫秒
-        webClient.getOptions().setTimeout(12000);
+        // 设置连接超时时间 ，这里是5S。如果为0，则无限期等待
+        webClient.getOptions().setTimeout(5000);
+        // 设置是否允许使用ActiveX
+        webClient.getOptions().setActiveXNative(false);
         // 忽略SSL认证
         webClient.getOptions().setUseInsecureSSL(false);
         // 设置js执行超时时间
         webClient.setJavaScriptTimeout(10000*3);
+        // 设置不跟踪抓取
+        webClient.getOptions().setDoNotTrackEnabled(false);
         // 设置Cookie
         webClient.getCookieManager().setCookiesEnabled(true);
         webClient.setJavaScriptEngine(new MyJavaScriptEngine(webClient));
