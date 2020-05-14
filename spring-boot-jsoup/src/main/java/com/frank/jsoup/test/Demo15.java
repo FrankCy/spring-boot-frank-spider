@@ -1,28 +1,16 @@
 package com.frank.jsoup.test;
 
 import com.frank.jsoup.test.util.HtmlUnitUtil;
-import com.frank.jsoup.test.util.JsoupUtil;
-import com.frank.jsoup.test.util.SeleniumUtil;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @ProjectName: spring-boot-frank-spider
@@ -89,9 +77,7 @@ public class Demo15 {
                 continue;
             }
 
-
             //************************************************************ 分隔【店铺内搜索商品】*************************************************************//*
-
 
             // 地址 goodsShopUrl
             String[] homeAddrArr = goodsShopUrl.split("/");
@@ -120,19 +106,21 @@ public class Demo15 {
                     System.out.println("店铺["+shopName+"]中无法获取商品["+shopGoodsTitile+"]的详情真实地址");
                     continue;
                 }
-
-                //************************************************************ 分隔【爬取商品详情】*************************************************************//*
-
-                // 组装详情页请求地址
-                String goodsDetailRealUrl = "https:"+goodsDetailUrl;
-                // 请求商品详情，获取商品详情页面
-                System.out.println("商品["+goodsName+"]在店铺["+shopName+"]详情真实地址为：" + goodsDetailRealUrl);
-                Document shopDetailInfo = HtmlUnitUtil.getHtmlUnitDocument(goodsDetailRealUrl, true, false, true, 3000);
-                System.out.println("商品详情信息 ----- \n " + shopDetailInfo.html());
-
             }
         }
+    }
 
+    public static String spiderText(Document document, String cssSelector) {
+        try {
+            Elements elements = document.select(cssSelector);
+            if(elements == null || elements.size() == 0) {
+                return "";
+            }
+            return Optional.ofNullable(document.select(cssSelector)).orElse(null).get(0).text();
+        } catch (NoSuchElementException n) {
+            System.out.println(n.getSupportUrl() + "获取内容失败");
+        }
+        return "";
     }
 
     /**
@@ -146,7 +134,6 @@ public class Demo15 {
         }
         System.out.println(description+":"+val);
     }
-
 
     public static void main(String[] args) throws IOException, InterruptedException {
         kaolaSipder();
