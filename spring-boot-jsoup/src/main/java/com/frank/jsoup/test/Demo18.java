@@ -45,9 +45,13 @@ public class Demo18 {
             String platformGoodsShopName = Optional.ofNullable(platformGoods.select("div > div.p-shop > span > a")).orElse(null).attr("title");
             printHtmlVal("商品名称", platformGoodsShopName);
 
-            // 商品店铺地址
+            // 店铺首页地址
             String platformGoodsShopUrl = Optional.ofNullable(platformGoods.select("div > div.p-shop > span > a")).orElse(null).attr("href");
-            printHtmlVal("商品店铺地址", platformGoodsShopUrl);
+            printHtmlVal("店铺首页地址", platformGoodsShopUrl);
+
+            // 商品详情地址
+            String goodsDetailUrl = Optional.ofNullable(platformGoods.select("div > div.p-img > a")).orElse(null).attr("href");
+            printHtmlVal("商品详情地址", goodsDetailUrl);
 
             // 总评论数（评价在列表中是动态js加载的，不建议在这里获取）
 
@@ -60,27 +64,19 @@ public class Demo18 {
              * 总结：需要替换未被大括号包围的内容（不确定是否准确，目前测的几个可以取到）
              */
 
-            // 按照上述组装店铺商品搜索地址
-            // 根据店铺地址提取店铺关键字，如上述例子中的(173957)
+            //按照上述组装店铺商品搜索地址
+            //根据店铺地址提取店铺关键字，如上述例子中的(173957)
             String regEx="[^0-9]";
             Pattern p = Pattern.compile(regEx);
-            Matcher m = p.matcher(platformGoodsShopName);
+            Matcher m = p.matcher(platformGoodsShopUrl);
             String shopCode = m.replaceAll("").trim();
 
             // 拼接店铺搜索地址
             String shopSearchRealUrl = "https://mall.jd.hk/view_search-1595129-"+shopCode+"-"+shopCode+"-0-0-0-0-1-1-60.html?keyword="+keyword;
             System.out.println("店铺内商品搜索地址为：" + shopSearchRealUrl);
 
-            Document shopGoodsDocument = HtmlUnitUtil.getHtmlUnitDocument(shopSearchRealUrl, true, false, false, 5000);
-            System.out.println("搜索结果为：" + shopGoodsDocument.html());
-
-            // 获取商品在店铺搜索结果的所在位置
-            Elements shopGoodsElements = shopGoodsDocument.select("div.j-module.jCurrent > ul > li");
-            System.out.println("店铺内商品搜索个数： " + shopGoodsElements.size());
-            for(Element shopGoodsElement : shopGoodsElements) {
-                System.out.println("店铺内商品搜索结果为： \n " + shopGoodsElement.html());
-            }
-
+            //Document shopGoodsDocument = HtmlUnitUtil.getHtmlUnitDocument(shopSearchRealUrl, true, false, false, 5000);
+            //System.out.println("搜索结果为：" + shopGoodsDocument.html());
 
         }
 

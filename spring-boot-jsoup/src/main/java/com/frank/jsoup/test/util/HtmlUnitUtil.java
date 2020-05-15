@@ -106,7 +106,7 @@ public class HtmlUnitUtil {
         WebClient webClient = null;
         // 判断是否使用代理并创建webclient,并设置对应的浏览器
         if(isProxy) {
-            webClient = new WebClient(BrowserVersion.CHROME, "58.218.92.87", 4661);
+            webClient = new WebClient(BrowserVersion.CHROME, "58.218.92.89", 7822);
         } else {
             webClient = new WebClient(BrowserVersion.CHROME);
         }

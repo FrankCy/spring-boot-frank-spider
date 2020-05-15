@@ -29,7 +29,6 @@ public class Demo19 {
 
         //************************************************************ 分隔【爬取商品详情】*************************************************************//*
         HtmlPage htmlPage = HtmlUnitUtil.getHtmlPage(url, true, false, true, 50000);
-        // 设置阻塞线程时间（js执行后）
         Document shopDetailInfo = Jsoup.parse(htmlPage.asXml());
 
         // 标题
