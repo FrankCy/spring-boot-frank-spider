@@ -222,8 +222,8 @@ public class JsoupUtil {
     public static void main(String[] args) {
         String goods = "商品名称";
         try {
-            String url = URLEncoder.encode(goods, "gb2312");
-            System.out.println(url);
+            goods = URLEncoder.encode(goods, "gb2312");
+            System.out.println(goods);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

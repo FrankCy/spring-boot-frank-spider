@@ -24,6 +24,16 @@ import java.net.SocketTimeoutException;
 public class HtmlUnitUtil {
 
     /**
+     * 重试cishu
+     */
+    private static int RETRY_COUNT = 5;
+
+    /**
+     * 重试间隔
+     */
+    private static long WAIT_TIME = 2000;
+
+    /**
      * 获取HtmlPage
      * @param url
      * @param proxy
@@ -106,7 +116,7 @@ public class HtmlUnitUtil {
         WebClient webClient = null;
         // 判断是否使用代理并创建webclient,并设置对应的浏览器
         if(isProxy) {
-            webClient = new WebClient(BrowserVersion.CHROME, "58.218.92.89", 7822);
+            webClient = new WebClient(BrowserVersion.CHROME, SpiderProxyUtil.IP, SpiderProxyUtil.PORT);
         } else {
             webClient = new WebClient(BrowserVersion.CHROME);
         }
@@ -149,9 +159,8 @@ public class HtmlUnitUtil {
         webClient.getCookieManager().setCookiesEnabled(true);
         webClient.setJavaScriptEngine(new MyJavaScriptEngine(webClient));
 
-
-
         return webClient;
     }
+
 
 }
