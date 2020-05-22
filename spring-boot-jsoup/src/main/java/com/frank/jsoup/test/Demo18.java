@@ -41,9 +41,9 @@ public class Demo18 {
             String platformGoodsPrice = Optional.ofNullable(platformGoods.select(" div > div.p-price > strong > i")).orElse(null).get(0).text();
             printHtmlVal("价格", platformGoodsPrice);
 
-            // 商品名称
+            // 店铺名称
             String platformGoodsShopName = Optional.ofNullable(platformGoods.select("div > div.p-shop > span > a")).orElse(null).attr("title");
-            printHtmlVal("商品名称", platformGoodsShopName);
+            printHtmlVal("店铺名称", platformGoodsShopName);
 
             // 店铺首页地址
             String platformGoodsShopUrl = Optional.ofNullable(platformGoods.select("div > div.p-shop > span > a")).orElse(null).attr("href");
@@ -77,6 +77,8 @@ public class Demo18 {
 
             //Document shopGoodsDocument = HtmlUnitUtil.getHtmlUnitDocument(shopSearchRealUrl, true, false, false, 5000);
             //System.out.println("搜索结果为：" + shopGoodsDocument.html());
+
+
 
         }
 

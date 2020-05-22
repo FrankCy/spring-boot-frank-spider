@@ -76,17 +76,39 @@ public class HttpClientUtil {
 
             if(StringUtils.isEmpty(responseInfo)) {
                 // 编写重试机制，动态更换代理
+                System.out.println("未获取到结果，手动抛出异常，触发重试！");
+                throw new RuntimeException();
             }
 
             // 退出前，关闭连接
             httpClient.close();
             return responseInfo;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("创建Httpclient发生错误，更换代理，开始重试"+e);
+            if(RetryUtil.RETRY_COUNTER > RetryUtil.RETRY_COUNT) {
+                System.out.println("重试超过"+RetryUtil.RETRY_COUNT+"次");
+                return null;
+            }
+            System.out.println("代理不可用，更换代理:"+ e);
+            try {
+                httpClient.close();
+            } catch (IOException e1) {
+                System.out.println("重试时，关闭http连接失败！"+ e1);
+                e1.printStackTrace();
+                return "";
+            }
+            SpiderProxyUtil.replaceProxy();
+            try {
+                Thread.sleep(RetryUtil.RETRY_WATI_TIME);
+            } catch (InterruptedException ee) {
+                System.out.println("重试时发生错误!"+ ee);
+                return null;
+            }
+            RetryUtil.RETRY_COUNTER++;
+            return get(url, true, "utf-8");
         }
-        return "";
     }
-
 
     /**
      * post方式获取HttpEntity

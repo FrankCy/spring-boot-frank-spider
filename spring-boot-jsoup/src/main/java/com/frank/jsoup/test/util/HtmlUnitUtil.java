@@ -1,18 +1,15 @@
 package com.frank.jsoup.test.util;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import net.sourceforge.htmlunit.corejs.javascript.EcmaError;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import javax.net.ssl.SSLException;
 import java.io.IOException;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
 /**
@@ -21,17 +18,23 @@ import java.net.SocketTimeoutException;
  * @author cy
  * @version $Id: HtmlUnitUtil.java, v 0.1 2020年05月12日 22:42 cy Exp $
  */
+@Slf4j
 public class HtmlUnitUtil {
 
     /**
-     * 重试cishu
+     * 重试次数
      */
     private static int RETRY_COUNT = 5;
 
     /**
+     * 重试计数器
+     */
+    private static int RETRY_COUNTER = 0;
+
+    /**
      * 重试间隔
      */
-    private static long WAIT_TIME = 2000;
+    private static int RETRY_WATI_TIME = 2000;
 
     /**
      * 获取HtmlPage
@@ -82,24 +85,22 @@ public class HtmlUnitUtil {
             // 设置阻塞线程时间（js执行后）
             webClient.waitForBackgroundJavaScript(waitForBackgroundJavaScriptTime);
             document = Jsoup.parse(page.asXml());
-        } catch (SSLException sslex) {
-            sslex.printStackTrace();
-            System.out.println("发生 SSLException ----- 证书签名错误 [" + url + "]" );
-        } catch (SocketTimeoutException ste) {
-            ste.printStackTrace();
-            System.out.println("连接超时 ----- 请更换代理 [" + url + "]");
-        } catch (FailingHttpStatusCodeException fhsce) {
-            fhsce.printStackTrace();
-            System.out.println("连接错误 ----- 请更换代理 [" + url + "]");
-        } catch (SocketException se) {
-            se.printStackTrace();
-            System.out.println("连接错误 ----- 请更换代理 [" + url + "]");
-        } catch (ClassCastException cce) {
-            cce.printStackTrace();
-            System.out.println("连接错误 ----- 解析错误，无法获取到类！");
-        } catch (EcmaError ecmaError) {
-            ecmaError.printStackTrace();
-            System.out.println("解析错误 ----- 无法解析");
+        } catch (Exception e) {
+            if(RETRY_COUNTER > RETRY_COUNT) {
+                log.error("重试超过5次!");
+                return null;
+            }
+            log.error("代理不可用，更换代理{}", e);
+            webClient.close();
+            SpiderProxyUtil.replaceProxy();
+            try {
+                Thread.sleep(RETRY_WATI_TIME);
+            } catch (InterruptedException ee) {
+                log.error("重试时发生错误！{}", ee);
+                return null;
+            }
+            RETRY_COUNTER++;
+            return getHtmlUnitDocument(url, proxy, isCss, isJs, waitForBackgroundJavaScriptTime);
         }
         webClient.close();
         return document;

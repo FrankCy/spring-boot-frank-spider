@@ -9,3 +9,4 @@ logs
 *.log*
 .DS_Store
 *.mvn
+SpiderProxyUtil.java

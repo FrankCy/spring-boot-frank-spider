@@ -77,20 +77,32 @@ public class Demo22 {
                             System.out.println("sku{"+ sku + "}    goodsName{"+ goodsName+"}");
                             // 通过sku获取价格、评论信息、详情图片
                             JSONArray priceJsonArray = getPrice(sku);
+                            JSONObject priceJson = priceJsonArray.getJSONObject(0);
+                            String price = priceJson.getString("p");
+                            System.out.println("售价：" + price);
                             JSONObject commentJson = getComment(sku);
                             JSONObject imggJson = getDetailImgs(sku, dataSpu);
                         }
                     }
                 } else {
+                    // 获取sku（详情中没有选项卡的）
+                    String sku = detailDocument.select("div.dd > a").attr("data-sku");
                     // 单个商品
                     // 直接通过sku获取价格、评论信息、详情图片
+                    // 通过sku获取价格、评论信息、详情图片
+                    JSONArray priceJsonArray = getPrice(sku);
+                    JSONObject priceJson = priceJsonArray.getJSONObject(0);
+                    String price = priceJson.getString("p");
+                    System.out.println("我是单个商品的售价：" + price);
+                    JSONObject commentJson = getComment(dataSku);
+                    JSONObject imggJson = getDetailImgs(dataSku, dataSpu);
                 }
                 //System.out.println("goodsHeaders html : " + goodsHeader.html());
 
                 // 获取商品详情信息（代理，非Css、js）
                 Elements goodsDetail = detailDocument.select("#detail > div.tab-con > div:nth-child(1) > div.p-parameter > ul.parameter2.p-parameter-list > li");
-                System.out.println("goodsDetail size : " + goodsDetail.size());
-                System.out.println("goodsDetail html : " + goodsDetail.html());
+                //System.out.println("goodsDetail size : " + goodsDetail.size());
+                //System.out.println("goodsDetail html : " + goodsDetail.html());
             }
 
         } catch (IOException e) {
@@ -134,14 +146,45 @@ public class Demo22 {
             System.out.println("评论地址 ： " + commentUrl);
             // 分页信息要写递归，并获取"comments"，如果没有即到底页
             String result = HttpClientUtil.get(commentUrl, true, "UTF-8");
-            System.out.println("\n \n \n " + result + "\n \n \n");
+            //System.out.println("\n \n \n 结果集：" + result + "\n \n \n");
             JSONObject commentJson = JSONObject.parseObject(result);
             if(commentJson == null) {
                 flag = false;
                 System.out.println("评论获取失败！");
                 continue;
             }
-            if(!commentJson.containsKey("comments")) {
+
+            if(commentJson.containsKey("comments")) {
+                System.out.println("包含评论，并且评论有值");
+                // 包含评论，并且评论有值
+                // 获取评论（JSONArray）
+                JSONArray commentsJsonArray = commentJson.getJSONArray("comments");
+                System.out.println("\n " + commentsJsonArray.toJSONString() + "\n");
+                for(int i=0; i<commentsJsonArray.size(); i++) {
+                    JSONObject commentsJson = commentsJsonArray.getJSONObject(i);
+                    String content = commentsJson.getString("content");
+                    System.out.println("评论信息 ： " + content);
+                    //String creationTime = commentsJson.getString("creationTime");
+                    //System.out.println("评论时间 ： " + creationTime);
+                    String score = commentsJson.getString("score");
+                    System.out.println("评分 ： " + score);
+                    String imageCount = commentsJson.getString("imageCount");
+                    System.out.println("评论上传图片数量 ： " + imageCount);
+                    JSONArray imagesJsonArray = commentsJson.getJSONArray("images");
+                    if(imagesJsonArray != null && imagesJsonArray.size() > 0) {
+                        for(int j=0; j<imagesJsonArray.size(); j++) {
+                            JSONObject imagesJson = imagesJsonArray.getJSONObject(j);
+                            String status = imagesJson.getString("status");
+                            if("0".equals(status)) {
+                                // 判断0是有效的图
+                                String imgUrl = imagesJson.getString("imgUrl");
+                                System.out.println("评论图片地址 ： " + imgUrl);
+                            }
+                        }
+                    }
+                }
+            } else {
+                System.out.println("NO 包含评论，并且评论有值");
                 // 没有评论了，但是有统计数据（评论总数，星数，默认评价数）
                 JSONObject productCommentSummaryJson = commentJson.getJSONObject("productCommentSummary");
                 System.out.println("skuId : " + productCommentSummaryJson.getString("skuId"));
@@ -155,33 +198,6 @@ public class Demo22 {
                 System.out.println("好评数 : " + productCommentSummaryJson.getString("goodCount"));
                 System.out.println("好评度 : " + productCommentSummaryJson.getString("goodRateShow"));
                 flag = false;
-            } else {
-                // 获取评论（JSONArray）
-                JSONArray commentsJsonArray = commentJson.getJSONArray("comments");
-                System.out.println("\n " + commentsJsonArray.toJSONString() + "\n");
-                for(int i=0; i<commentsJsonArray.size(); i++) {
-                    JSONObject commentsJson = commentsJsonArray.getJSONObject(i);
-                    String content = commentsJson.getString("content");
-                    System.out.println("评论信息 ： " + content);
-                    //String creationTime = commentsJson.getString("creationTime");
-                    //System.out.println("评论时间 ： " + creationTime);
-                    String score = commentsJson.getString("score");
-                    System.out.println("评分 ： " + score);
-                    String imageCount = commentsJson.getString("imageCount");
-                    System.out.println("上传图片数量 ： " + imageCount);
-                    JSONArray imagesJsonArray = commentsJson.getJSONArray("images");
-                    if(imagesJsonArray != null && imagesJsonArray.size() > 0) {
-                        for(int j=0; j<imagesJsonArray.size(); j++) {
-                            JSONObject imagesJson = imagesJsonArray.getJSONObject(j);
-                            String status = imagesJson.getString("status");
-                            if("0".equals(status)) {
-                                // 判断0是有效的图
-                                String imgUrl = imagesJson.getString("imgUrl");
-                                System.out.println("图片地址 ： " + imgUrl);
-                            }
-                        }
-                    }
-                }
             }
             page++;
         }

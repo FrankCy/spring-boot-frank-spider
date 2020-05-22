@@ -26,11 +26,11 @@ public class Demo20 {
 
     public static void jdShopGoodsList() throws IOException {
         // 获取WebClient
-        WebClient webClient = HtmlUnitUtil.getWebClient(true, true, true);
+        WebClient webClient = HtmlUnitUtil.getWebClient(true, false, true);
         // 获取开始时间
         long startTime = System.currentTimeMillis();
         HtmlPage shopGoodsHtml = webClient.getPage(SHOP_SEARCH_URL);
-        webClient.waitForBackgroundJavaScript(5000);
+        webClient.waitForBackgroundJavaScript(2000);
         // 获取结束时间
         long endTime = System.currentTimeMillis();
 
