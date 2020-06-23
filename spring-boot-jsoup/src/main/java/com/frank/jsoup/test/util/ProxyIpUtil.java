@@ -10,6 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ProxyIpUtil {
     
-    private static final ConcurrentHashMap<String, String> proxyIpMap = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, String> proxyIpMap = new ConcurrentHashMap<>();
     
 }

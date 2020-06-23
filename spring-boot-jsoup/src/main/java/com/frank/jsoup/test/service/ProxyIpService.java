@@ -20,7 +20,7 @@ public interface ProxyIpService {
     /**
      * 爬取代理IP
      */
-    //void crawProxyIp();
+    void crawProxyIp();
 
     /**
      * 爬取
@@ -28,5 +28,11 @@ public interface ProxyIpService {
      * @return
      */
     List<ProxyIpVO> crawlProxyIpListByPageNo(int pageNo);
+
+    /**
+     * 使用代理
+     * @return
+     */
+    String useProxy();
 
 }

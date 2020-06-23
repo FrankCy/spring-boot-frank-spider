@@ -1,10 +1,12 @@
 package com.frank.jsoup.test.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.frank.jsoup.test.constant.CommonStatusEnum;
 import com.frank.jsoup.test.constant.ErrorCodeEnum;
 import com.frank.jsoup.test.exception.ServiceException;
 import com.frank.jsoup.test.service.ProxyIpService;
 import com.frank.jsoup.test.util.DateUtil;
+import com.frank.jsoup.test.util.ProxyIpUtil;
 import com.frank.jsoup.test.vo.ProxyIpVO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -19,8 +21,12 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -107,16 +113,65 @@ public class ProxyIpServiceImpl implements ProxyIpService {
         }
     }
 
+    */
     @Override
     public void crawProxyIp() {
+        log.info("获取代理");
+        /*
         for (int pageNo = 1; pageNo <= MAX_PAGE_SIZE; pageNo++) {
             List<ProxyIpVO> proxyIpVOList = this.crawlProxyIpListByPageNo(pageNo);
             for (ProxyIpVO proxyIpVO : proxyIpVOList) {
-                this.create(proxyIpVO);
+                int connectionTime = proxyIpVO.getConnectionTime();
+                // 只取500延时以内的代理
+                if(connectionTime >= 500) {
+                    continue;
+                }
+                StringBuffer str = new StringBuffer();
+                String proxyInfo = str.append(proxyIpVO.getIp()).append(":").append(proxyIpVO.getPort()).toString();
+                JSONObject json = new JSONObject();
+                // 使用次数默认是0
+                json.put("USAGE_TIMES", 0);
+                // 设置有效时间（10分钟）
+                json.put("EXPIRATION_DATE ", getExpirationDate());
+                // 设置代理IP服务器地址
+                json.put("SERVER_ADDRESS", proxyIpVO.getServerAddress());
+                // 何止代理IP超文本协议
+                json.put("PROXY_TYPE", proxyIpVO.getType());
+                if(ProxyIpUtil.proxyIpMap != null) {
+                    ProxyIpUtil.proxyIpMap.put(proxyInfo, json.toJSONString());
+                } else {
+                    ProxyIpUtil.proxyIpMap = new ConcurrentHashMap<>();
+                    crawProxyIp();
+                }
+            }
+        }
+        */
+        for(int i=0; i<100; i++) {
+            JSONObject json = new JSONObject();
+            // 使用次数默认是0
+            json.put("USAGE_TIMES", 0);
+            // 设置有效时间（10分钟）
+            json.put("EXPIRATION_DATE ", getExpirationDate());
+            // 设置代理IP服务器地址
+            json.put("SERVER_ADDRESS", "local");
+            // 何止代理IP超文本协议
+            json.put("PROXY_TYPE", "https");
+            if(ProxyIpUtil.proxyIpMap != null) {
+                ProxyIpUtil.proxyIpMap.put("192.168.1."+i+":"+i, json.toJSONString());
+            } else {
+                ProxyIpUtil.proxyIpMap = new ConcurrentHashMap<>();
+                crawProxyIp();
             }
         }
     }
-    */
+
+    /**
+     * 获取未来10分钟的时间数值（使用的时候用当前时间数值-这个值，得到当前代理是否失效）
+     * @return
+     */
+    private static int getExpirationDate() {
+        return 0;
+    }
 
     /**
      * 获取可用的代理IP地址的值对象组成的List对象
@@ -181,6 +236,74 @@ public class ProxyIpServiceImpl implements ProxyIpService {
         }
 
         return proxyIpVOList;
+    }
+
+    @Override
+    public String useProxy() {
+        log.info("useProxy begin");
+        String resultMsg = "fail";
+        // 如果代理为空，重新获取代理
+        if(ProxyIpUtil.proxyIpMap == null || ProxyIpUtil.proxyIpMap.size() == 0) {
+            crawProxyIp();
+        }
+        try {
+            for(int i=0; i<100; i++) {
+                Thread.sleep(1000);
+                log.info("任务{} 开始执行", i);
+                String executeProxy = "";
+                Iterator<Entry<String, String>> iterator = ProxyIpUtil.proxyIpMap.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, String> entry = iterator.next();
+                    String proxy = entry.getKey();
+                    log.info("使用了proxy {} ", proxy);
+                    String proxyIpMapVal = entry.getValue();
+                    JSONObject jsonObject = JSONObject.parseObject(proxyIpMapVal);
+                    int expirationDate = 0;
+                    if(jsonObject.get("EXPIRATION_DATE") == null) {
+                        expirationDate = 999;
+                    } else {
+                        expirationDate = jsonObject.getInteger("EXPIRATION_DATE");
+                    }
+                    // TODO:1000代表当前时间，当前时间小于等于有效期，则代理过期，删除即可
+                    if(1000 <= expirationDate) {
+                        ProxyIpUtil.proxyIpMap.entrySet().iterator().remove();
+                        log.error("代理{}已过有效期，删除该代理，重新获取！",proxy);
+                        continue;
+                    }
+                    int usageTimes = 0;
+                    if(jsonObject.get("USAGE_TIMES") == null) {
+                        usageTimes = 1;
+                    } else {
+                        usageTimes = jsonObject.getInteger("USAGE_TIMES");
+                    }
+                    // TODO:最大使用次数大于等于已用次数时，删除代理，重新获取
+                    if(usageTimes >= 5) {
+                        ProxyIpUtil.proxyIpMap.remove(proxy);
+                        log.error("代理{}使用次数大于最大使用次数，删除该代理，重新获取！", proxy);
+                        continue;
+                    }
+                    usageTimes++;
+                    log.info("代理{}可用......", proxy);
+                    // 用完了，要把更新的值放回去
+                    jsonObject.put("USAGE_TIMES", usageTimes);
+                    ProxyIpUtil.proxyIpMap.put(proxy, jsonObject.toJSONString());
+                    log.info("代理使用完，更新使用次数后放回代理MAP END");
+                    executeProxy = proxy;
+                    break;
+                }
+
+                log.info("任务{}使用代理{}进行业务操作......", i, executeProxy);
+                log.info("任务{} 结束执行\n \n \n", i);
+            }
+        } catch (Exception e) {
+            log.error("useProxy error {}", e);
+            return resultMsg;
+        }
+        resultMsg = "success";
+
+        log.info("useProxy end");
+
+        return resultMsg;
     }
 
     /**

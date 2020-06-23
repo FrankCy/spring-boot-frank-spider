@@ -22,7 +22,7 @@ public class Demo23 {
      */
     public static void spiderStore() throws IOException {
 
-        String spiderUrl = "https://search.kaola.com/search.html?key=小黑瓶发光眼霜";
+        String spiderUrl = "https://search.kaola.com/search.html?key=迪奥魅惑唇膏";
         Document platformSearchResult = HtmlUnitUtil.getHtmlUnitDocument(spiderUrl, true, false, false, 5000);
         Elements elements = platformSearchResult.select("div.m-result ul.clearfix li.goods");
         for(Element element : elements) {
