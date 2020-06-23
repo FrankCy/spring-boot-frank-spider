@@ -1,4 +1,4 @@
-package com.frank.jsoup.test;
+package com.frank.jsoup.test.demo;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;

@@ -1,4 +1,4 @@
-package com.frank.jsoup.test;
+package com.frank.jsoup.test.demo;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -21,7 +21,7 @@ import java.io.IOException;
  * @Description: ${description}
  * @Date: 2020-04-14 12:00
  */
-public class Demo3 {
+public class Demo4 {
     public static void main(String[] args) {
 
         // 创建httpclient
@@ -54,26 +54,13 @@ public class Demo3 {
         Elements linkElements = doc.select("#post_list .post_item .post_item_body h3 a");
         for(Element e : linkElements) {
             System.out.println("博客标题：" + e.text());
+            System.out.println("博客地址：" + e.attr("href"));
+            System.out.println("target：" + e.attr("target"));
         }
 
-        // 通过选择器获取包含href的a标签
-        Elements aHrefElements = doc.select("a[href]");
-        System.out.println("--------- 输出aHref -----------");
-        for(Element e : aHrefElements) {
-            System.out.println(e.toString());
-        }
-
-        // 通过选择器获取扩展名为.png的图片
-        Elements pngElements = doc.select("img[src$=.png]");
-        System.out.println("--------- 输出png -----------");
-        for(Element e : pngElements) {
-            System.out.println(e.toString());
-        }
-
-        // 通过选择器获取tag是title的节点
-        Element titleElement = doc.getElementsByTag("title").first();
-        System.out.println("--------- 输出title -----------");
-        System.out.println(titleElement.text());
+        Element linkElement = doc.select("#friend_link").first();
+        System.out.println("纯文本：" + linkElement.text());
+        System.out.println("Html：" + linkElement.html());
 
     }
 }

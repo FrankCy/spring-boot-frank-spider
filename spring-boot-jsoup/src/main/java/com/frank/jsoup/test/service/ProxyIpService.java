@@ -1,5 +1,9 @@
 package com.frank.jsoup.test.service;
 
+import com.frank.jsoup.test.vo.ProxyIpVO;
+
+import java.util.List;
+
 /**
  *
  *
@@ -11,11 +15,18 @@ public interface ProxyIpService {
     /**
      * 校验代理IP
      */
-    void checkProxyIp();
+    //void checkProxyIp();
 
     /**
      * 爬取代理IP
      */
-    void crawProxyIp();
+    //void crawProxyIp();
+
+    /**
+     * 爬取
+     * @param pageNo
+     * @return
+     */
+    List<ProxyIpVO> crawlProxyIpListByPageNo(int pageNo);
 
 }

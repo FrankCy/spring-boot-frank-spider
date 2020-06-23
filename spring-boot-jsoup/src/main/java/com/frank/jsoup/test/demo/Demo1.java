@@ -1,4 +1,4 @@
-package com.frank.jsoup.test;
+package com.frank.jsoup.test.demo;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -21,9 +21,8 @@ import java.io.IOException;
  * @Description: ${description}
  * @Date: 2020-04-14 12:00
  */
-public class Demo2 {
+public class Demo1 {
     public static void main(String[] args) {
-
         // 创建httpclient
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -48,29 +47,19 @@ public class Demo2 {
         // 使用Jsoup(类似获取页面节点)
         // 解析网页
         Document doc =  Jsoup.parse(content);
+        // 获取title
+        Elements elements =  doc.getElementsByTag("title");
+        // 获取第一个titile
+        Element element = elements.get(0);
 
-        // 通过Clas获取
-        Elements postItemElements = doc.getElementsByClass("post_item");
-        System.out.println("--------- 输出post_item -----------");
-        for(Element element : postItemElements) {
-            System.out.println(element.html());
-            System.out.println("--------------------");
-        }
+        // 返回元素文本
+        System.out.println("网页标题是： " +  element.text());
 
-        // 通过属性名获取对象
-        Elements widthElments = doc.getElementsByAttribute("width");
-        System.out.println("--------- 输出width -----------");
-        for(Element element : widthElments) {
-            System.out.println(element.toString());
-            System.out.println("--------------------");
-        }
+        // 获取指定ID内容
+        Element element1 = doc.getElementById("site_nav_top");
+        String navTop = element.text();
+        System.out.println("口号： " + navTop);
 
-        // 通过属性值和名查找
-        Elements widthKvElments = doc.getElementsByAttributeValue("width", "142");
-        System.out.println("--------- 输出widthKv -----------");
-        for(Element element : widthKvElments) {
-            System.out.println(element.toString());
-            System.out.println("--------------------");
-        }
+
     }
 }

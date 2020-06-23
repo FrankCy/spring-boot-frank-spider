@@ -1,4 +1,4 @@
-package com.frank.jsoup.test;
+package com.frank.jsoup.test.demo;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;

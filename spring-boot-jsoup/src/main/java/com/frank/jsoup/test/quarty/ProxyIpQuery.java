@@ -11,5 +11,8 @@ import lombok.Data;
 @Data
 public class ProxyIpQuery {
 
+    /**
+     * 目标页数
+     */
     private int pageNo;
 }

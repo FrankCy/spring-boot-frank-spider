@@ -1,4 +1,4 @@
-package com.frank.jsoup.test;
+package com.frank.jsoup.test.demo;
 
 import com.frank.jsoup.test.util.JsoupUtil;
 import org.jsoup.nodes.Element;
@@ -10,25 +10,25 @@ import java.net.URLEncoder;
 /**
  * @ProjectName: spring-boot-frank-spider
  * @Package: com.frank.jsoup.test
- * @ClassName: Demo9
+ * @ClassName: Demo10
  * @Author: cy
  * @Description: ${description}
- * @Date: 2020-04-30 20:27
+ * @Date: 2020-05-06 10:26
  */
-public class Demo9 {
+public class Demo10 {
 
     /**
-     * 天猫详情页
+     * 医药网药品信息
      * @throws IOException
      */
     public static void tmallDetail() throws IOException {
         try {
             // 列表看是位置
-            String listRangeEx = "dl.J_TModule";
-            String goodsName = "兰蔻";
+            String listRangeEx = "div.layui-tab-item layui-show";
+            String goodsName = "西药";
             goodsName =  URLEncoder.encode(goodsName, "gb2312");
             System.out.println("goodsName: " + goodsName);
-            Elements elements = JsoupUtil.getElements("https://store.taobao.com/search.htm?user_number_id=2360209412&keyword="+goodsName, 10, 3000, false, listRangeEx);
+            Elements elements = JsoupUtil.getElements("https://search.mypharma.com/?s_classify1="+goodsName, 1, 1000, false, listRangeEx);
 
             System.out.println(elements.size());
             for(Element e : elements) {

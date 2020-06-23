@@ -1,4 +1,4 @@
-package com.frank.jsoup.test;
+package com.frank.jsoup.test.demo;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -21,7 +21,7 @@ import java.io.IOException;
  * @Description: ${description}
  * @Date: 2020-04-14 12:00
  */
-public class Demo4 {
+public class Demo2 {
     public static void main(String[] args) {
 
         // 创建httpclient
@@ -49,18 +49,28 @@ public class Demo4 {
         // 解析网页
         Document doc =  Jsoup.parse(content);
 
-        // 通过选择器选择获取节点
-        // 通过选择器按照博客链接查找帖子
-        Elements linkElements = doc.select("#post_list .post_item .post_item_body h3 a");
-        for(Element e : linkElements) {
-            System.out.println("博客标题：" + e.text());
-            System.out.println("博客地址：" + e.attr("href"));
-            System.out.println("target：" + e.attr("target"));
+        // 通过Clas获取
+        Elements postItemElements = doc.getElementsByClass("post_item");
+        System.out.println("--------- 输出post_item -----------");
+        for(Element element : postItemElements) {
+            System.out.println(element.html());
+            System.out.println("--------------------");
         }
 
-        Element linkElement = doc.select("#friend_link").first();
-        System.out.println("纯文本：" + linkElement.text());
-        System.out.println("Html：" + linkElement.html());
+        // 通过属性名获取对象
+        Elements widthElments = doc.getElementsByAttribute("width");
+        System.out.println("--------- 输出width -----------");
+        for(Element element : widthElments) {
+            System.out.println(element.toString());
+            System.out.println("--------------------");
+        }
 
+        // 通过属性值和名查找
+        Elements widthKvElments = doc.getElementsByAttributeValue("width", "142");
+        System.out.println("--------- 输出widthKv -----------");
+        for(Element element : widthKvElments) {
+            System.out.println(element.toString());
+            System.out.println("--------------------");
+        }
     }
 }

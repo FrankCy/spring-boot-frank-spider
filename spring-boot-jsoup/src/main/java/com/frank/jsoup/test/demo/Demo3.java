@@ -1,4 +1,4 @@
-package com.frank.jsoup.test;
+package com.frank.jsoup.test.demo;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -21,8 +21,9 @@ import java.io.IOException;
  * @Description: ${description}
  * @Date: 2020-04-14 12:00
  */
-public class Demo1 {
+public class Demo3 {
     public static void main(String[] args) {
+
         // 创建httpclient
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
@@ -47,19 +48,32 @@ public class Demo1 {
         // 使用Jsoup(类似获取页面节点)
         // 解析网页
         Document doc =  Jsoup.parse(content);
-        // 获取title
-        Elements elements =  doc.getElementsByTag("title");
-        // 获取第一个titile
-        Element element = elements.get(0);
 
-        // 返回元素文本
-        System.out.println("网页标题是： " +  element.text());
+        // 通过选择器选择获取节点
+        // 通过选择器按照博客链接查找帖子
+        Elements linkElements = doc.select("#post_list .post_item .post_item_body h3 a");
+        for(Element e : linkElements) {
+            System.out.println("博客标题：" + e.text());
+        }
 
-        // 获取指定ID内容
-        Element element1 = doc.getElementById("site_nav_top");
-        String navTop = element.text();
-        System.out.println("口号： " + navTop);
+        // 通过选择器获取包含href的a标签
+        Elements aHrefElements = doc.select("a[href]");
+        System.out.println("--------- 输出aHref -----------");
+        for(Element e : aHrefElements) {
+            System.out.println(e.toString());
+        }
 
+        // 通过选择器获取扩展名为.png的图片
+        Elements pngElements = doc.select("img[src$=.png]");
+        System.out.println("--------- 输出png -----------");
+        for(Element e : pngElements) {
+            System.out.println(e.toString());
+        }
+
+        // 通过选择器获取tag是title的节点
+        Element titleElement = doc.getElementsByTag("title").first();
+        System.out.println("--------- 输出title -----------");
+        System.out.println(titleElement.text());
 
     }
 }

@@ -1,4 +1,4 @@
-package com.frank.jsoup.test;
+package com.frank.jsoup.test.demo;
 
 import com.frank.jsoup.test.util.SeleniumUtil;
 import org.jsoup.nodes.Element;
