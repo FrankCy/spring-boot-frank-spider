@@ -27,7 +27,7 @@ public class Demo23 {
         Elements elements = platformSearchResult.select("div.m-result ul.clearfix li.goods");
         for(Element element : elements) {
             String storeName = element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='selfflag']").get(0).text();
-            String storeUrl = "https:"+element.select("div[class='goodswrap promotion'] div[class='desc clearfix'] p[class='selfflag'] a").attr("href");
+            String storeUrl = "https:"+element.select("li > div > a").attr("href");
             String goodsDetail = "https:"+element.select("div[class='goodswrap promotion'] a").attr("href");
             if(StringUtils.isEmpty(storeUrl) || "https:".equals(storeUrl)) {
                 System.out.println("官方自营店没有店铺地址，迭代下一个！");
@@ -96,9 +96,9 @@ public class Demo23 {
 
     public static void main(String[] args) {
         try {
-            //spiderStore();
+            spiderStore();
             //spiderStoreList();
-            spiderGoodsDetail();
+            //spiderGoodsDetail();
         } catch (IOException e) {
             e.printStackTrace();
         }
