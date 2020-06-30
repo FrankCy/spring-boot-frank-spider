@@ -44,16 +44,26 @@ public class HtmlUnitUtil {
      */
     public static HtmlPage getHtmlPage(String url, boolean proxy, boolean isCss, boolean isJs, long waitForBackgroundJavaScriptTime) {
         WebClient webClient = initWebClient(proxy, isCss, isJs);
-        webClient.waitForBackgroundJavaScript(waitForBackgroundJavaScriptTime);
         HtmlPage page = null;
         try {
             page = webClient.getPage(url);
-        } catch (SocketTimeoutException ste) {
-            ste.printStackTrace();
-            System.out.println("创建连接失败 SocketTimeoutException，请重新获取代理");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("创建连接失败 IOException，请重新获取代理");
+            webClient.waitForBackgroundJavaScript(waitForBackgroundJavaScriptTime);
+        } catch (Exception e) {
+            if(RETRY_COUNTER > RETRY_COUNT) {
+                log.error("重试超过5次!");
+                return null;
+            }
+            log.error("代理不可用，更换代理{}", e);
+            webClient.close();
+            SpiderProxyUtil.replaceProxy();
+            try {
+                Thread.sleep(RETRY_WATI_TIME);
+            } catch (InterruptedException ee) {
+                log.error("重试时发生错误！{}", ee);
+                return null;
+            }
+            RETRY_COUNTER++;
+            return getHtmlPage(url, proxy, isCss, isJs, waitForBackgroundJavaScriptTime);
         }
         return page;
     }

@@ -11,5 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ProxyIpUtil {
     
     public static ConcurrentHashMap<String, String> proxyIpMap = new ConcurrentHashMap<>();
+
+    public static void main(String[] args) {
+        String sss = "3.asdb.31a.csad51123";
+        System.out.println(sss.replaceAll("[^\\d.]",""));
+
+    }
     
 }

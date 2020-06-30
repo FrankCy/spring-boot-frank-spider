@@ -1,5 +1,6 @@
 package com.frank.jsoup.test.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -27,6 +28,7 @@ import java.util.Map;
  * @author cy
  * @version $Id: HttpClientUtil.java, v 0.1 2020年05月15日 21:19 cy Exp $
  */
+@Slf4j
 public class HttpClientUtil {
 
     /**
@@ -90,7 +92,7 @@ public class HttpClientUtil {
                 System.out.println("重试超过"+RetryUtil.RETRY_COUNT+"次");
                 return null;
             }
-            System.out.println("代理不可用，更换代理:"+ e);
+            log.error("HttpClientUtil get 代理不可用，更换代理:", e);
             try {
                 httpClient.close();
             } catch (IOException e1) {

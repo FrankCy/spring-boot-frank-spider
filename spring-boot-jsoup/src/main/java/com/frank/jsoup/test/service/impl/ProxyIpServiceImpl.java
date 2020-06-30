@@ -59,6 +59,11 @@ public class ProxyIpServiceImpl implements ProxyIpService {
     private static final int MAX_PAGE_SIZE = 30;
 
     /**
+     * 最大可用次数
+     */
+    private static final int MAX_TIMES = 10;
+
+    /**
      * 超时时间, 单位为: 毫秒
      */
     private static final int TIMEOUT = 3000;
@@ -277,7 +282,7 @@ public class ProxyIpServiceImpl implements ProxyIpService {
                         usageTimes = jsonObject.getInteger("USAGE_TIMES");
                     }
                     // TODO:最大使用次数大于等于已用次数时，删除代理，重新获取
-                    if(usageTimes >= 5) {
+                    if(usageTimes >= MAX_TIMES) {
                         ProxyIpUtil.proxyIpMap.remove(proxy);
                         log.error("代理{}使用次数大于最大使用次数，删除该代理，重新获取！", proxy);
                         continue;

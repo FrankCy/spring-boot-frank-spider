@@ -30,6 +30,10 @@ public class Demo24 {
                 continue;
             }
             System.out.println("地址为： " + detailUrlElements.get(0).attr("href"));
+            Elements priceElements = element.select("div > div.p_discount.commonFontPrice");
+            System.out.println(priceElements.text());
+            Elements titleElements = element.select("div > div.p_productCN");
+            System.out.println(titleElements.text());
         }
 
     }
