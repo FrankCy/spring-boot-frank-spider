@@ -91,18 +91,16 @@ public class Demo23 {
      * 商品详情页搜索
      */
     public static void spiderGoodsDetail() throws IOException {
-        // 手串
-        //String storeSearchUrl = "https://goods.kaola.com/product/1402279.html?spm=a2v0d.b49118739.0.0.43c41278z4hsNw&referPage=searchPage&referId=%E6%81%B6%E9%AD%94%E4%B9%8B%E7%9C%BC%E6%89%8B%E9%93%BE&from=page1&position=0&istext=0&srId=dd36bbfdb23b5e4260c948e9ca1c6b8d&zn=result&zp=page1-0&ri=%E6%81%B6%E9%AD%94%E4%B9%8B%E7%9C%BC%E6%89%8B%E9%93%BE&rp=search" ;
-        //String storeSearchUrl = "https://goods.kaola.com/product/5588257.html" ;
-        // 口红（很多色号）
-        //String storeSearchUrl = "https://goods.kaola.com/product/2891970.html" ;
-        // 口红（很多色号）
-        String storeSearchUrl = "https://goods.kaola.com/product/5668086.html" ;
+        //String storeSearchUrl = "https://goods.kaola.com/product/2891969.html" ;
+        // 非自营店的一条数据
+        //String storeSearchUrl = "https://goods.kaola.com/product/8296696.html" ;
+        // 口红，非自营店（有很多颜色，颜色不同价格也不同）
+        String storeSearchUrl = "https://goods.kaola.com/product/2891969.html" ;
 
         HtmlPage htmlPage = HtmlUnitUtil.getHtmlPage(storeSearchUrl, true, false, true, 5000);
         Document goodsDetailResult = Jsoup.parse(htmlPage.asXml());
-        Elements headerInfo = goodsDetailResult.select("#j-producthead > div.PInfoWrap.clearfix > dl");
 
+        Elements headerInfo = goodsDetailResult.select("#j-producthead > div.PInfoWrap.clearfix > dl");
 
         System.out.println("个数： " + headerInfo.size() + "\n \n \n \n");
         if(headerInfo == null || headerInfo.size() == 0) {
@@ -112,6 +110,7 @@ public class Demo23 {
         String title = validateData(headerInfo.select("dt.product-title > span"));
         System.out.println("标题 : " + title);
 
+        /*
         if(StringUtils.isNotEmpty(localColor) && StringUtils.isNotEmpty(localSpecifications)) {
             // 有颜色，有规格
             // 先匹配颜色（从title中取，后续实现切换颜色）
@@ -145,6 +144,7 @@ public class Demo23 {
                 return;
             }
         }
+        */
 
         System.out.println("描述 : " + validateData(headerInfo.select("dt.subTit")));
         System.out.println("售价 : " + validateData(headerInfo.select("dd.m-price-wrap > div.m-price > div > span.PInfo_r.currentPrice > span")));
@@ -164,21 +164,27 @@ public class Demo23 {
         System.out.println("考拉商品ID : " + headerInfo.select("#j-formEl > input[type=hidden]:nth-child(4)").val());
         System.out.println("组合 : " + headerInfo.select("div.skuBox.clearfix.first-skubox.last-skuBox > div > ul > li.imgbox").size());
 
-
-        DomNodeList<DomNode> liList = htmlPage.querySelectorAll("div.skuBox.clearfix.first-skubox.last-skuBox > div > ul > li.imgbox");
-        for(DomNode domNode : liList) {
-            DomElement domElement = domNode.getNextElementSibling();
-            domElement.click();
-            log.info("点击了----- {}", domElement.asText());
-            System.out.println(validateData(headerInfo.select("dd.m-price-wrap > div.m-price > div > span.PInfo_r.currentPrice > span")));
-            //Document liDocument = Jsoup.parse(domNode.asXml());
-            //System.out.println("----- liDocument ----- " + liDocument.html());
+        // 先判断是否有颜色区域（非口红类的商品没有颜色区域）
+        if(StringUtils.isNotEmpty(validateData(headerInfo.select("#j_skuwrap > div.skuBox.clearfix.first-skubox.last-skuBox")))
+        && !"无".equals(validateData(headerInfo.select("#j_skuwrap > div.skuBox.clearfix.first-skubox.last-skuBox")))) {
+            DomNodeList<DomNode> liList = htmlPage.querySelectorAll("div.skuBox.clearfix.first-skubox.last-skuBox > div > ul > li.imgbox");
+            for(int i=0; i<liList.size(); i++) {
+                DomNode domNode = liList.get(i);
+                //System.out.println(" domNode 颜色 : " + domNode.getAttributes().getNamedItem("title").getNodeValue());
+                //System.out.println(" domNode 颜色 : "  + domNode.querySelector("li");
+                //System.out.println(" domNode 售价 : " + validateData(headerInfo.select("dd.m-price-wrap > div.m-price > div > span.PInfo_r.currentPrice > span")));
+                //System.out.println(" domNode 颜色 : "  + domNode.getNextElementSibling().getAttribute("title"));
+                //String domNodeColor = domNode.querySelector("p.selectedDesc").asText();
+                //System.out.println(" domNode 颜色 : "  + domNodeColor);
+                DomElement nextElementSibling = domNode.getNextElementSibling();
+                HtmlPage nextHtmlPage = nextElementSibling.click();
+                // 执行点击事件
+                System.out.println(" next domNode 价格 :" + nextHtmlPage.querySelector("dd.m-price-wrap > div.m-price > div > span.PInfo_r.currentPrice > span").asText());
+                System.out.println(" next domNode 颜色 :" + nextHtmlPage.querySelector("li.selectedImgDesc.show > p.selectedDesc").asText());
+                //System.out.println(" nextElementSibing 颜色 :" + nextElementSibing.querySelector("p.selectedDesc").asText());
+                //#j_skuwrap > div.skuBox.clearfix.first-skubox.last-skuBox > div > ul > li.selectedImgDesc> p.selectedDesc
+            }
         }
-
-        // 模拟点击事件
-        //List<DomElement> domElementList = htmlPage.getElementsByIdAndOrName("clearfix");
-        //htmlPage
-
     }
 
     public static String getSpecifications(Elements elements, String cssSelector) {

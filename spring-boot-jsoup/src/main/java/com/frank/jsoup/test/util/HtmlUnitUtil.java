@@ -157,7 +157,9 @@ public class HtmlUnitUtil {
         // 允许重定向
         webClient.getOptions().setRedirectEnabled(true);
         // 设置连接超时时间 ，这里是5S。如果为0，则无限期等待
-        webClient.getOptions().setTimeout(5000);
+        webClient.getOptions().setTimeout(10000);
+        // 设置忽略js报错，不打印日志
+        webClient.setJavaScriptErrorListener(new MyJSErrorListener());
         // 设置是否允许使用ActiveX
         webClient.getOptions().setActiveXNative(false);
         // 忽略SSL认证

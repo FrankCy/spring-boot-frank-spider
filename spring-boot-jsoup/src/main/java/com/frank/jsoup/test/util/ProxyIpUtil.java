@@ -12,10 +12,24 @@ public class ProxyIpUtil {
     
     public static ConcurrentHashMap<String, String> proxyIpMap = new ConcurrentHashMap<>();
 
-    public static void main(String[] args) {
-        String sss = "3.asdb.31a.csad51123";
-        System.out.println(sss.replaceAll("[^\\d.]",""));
+    public static String removeChinese (String s){
+        //匹配中文
+        String s1 = "[\u4e00-\u9fa5]";
+        // 去除中文
+        return s.replaceAll(s1, "");
+    }
 
+    public static String removeLetter(String s){
+        //去除字母
+        return s.replaceAll("[a-zA-Z]","");
+    }
+
+    public static void main(String[] args) {
+        String font = "3*.5g 克";
+        font = removeLetter(font);
+        System.out.println(font);
+        font = removeChinese(font);
+        System.out.println(font);
     }
     
 }

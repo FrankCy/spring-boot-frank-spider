@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -219,7 +220,24 @@ public class JsoupUtil {
     }
 
 
+    private static void initMap(Map map) {
+        map.put("aaa", "aaaaa");
+        map.put("acaa", "aaa11aa");
+        map.put("adaa", "aaa33aa");
+        map.put("asaa", "aaa55aa");
+        return;
+    }
+
     public static void main(String[] args) {
+        Map<String, String> map = new HashMap();
+        map.put("kkk", "dsd我啊啊");
+        initMap(map);
+
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            System.out.println(entry.getKey() + " ----- " + entry.getValue());
+        }
+
+        /*
         String goods = "商品名称";
         try {
             goods = URLEncoder.encode(goods, "gb2312");
@@ -227,6 +245,7 @@ public class JsoupUtil {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        */
     }
 
     /**
