@@ -31,6 +31,9 @@
 ||Demo24|模拟获取丝芙兰商品信息|
 |spring-boot-webmagic||Java爬虫框架【webmagic】Demo|
 
+## 整理
+爬取目标：京东、考拉、丝芙兰
+使用工具：HtmlUnit（单线程，大部分网站通过代理可以获取，但是反爬多层JS的无法取到）、ChromeDriver（多进程，需要考虑销毁机制）等（其它的不咋好用）
 
 
 
