@@ -2,7 +2,6 @@ package com.frank.jsoup.test.demo;
 
 import com.frank.jsoup.test.util.FormatUtil;
 import com.frank.jsoup.test.util.HtmlUnitUtil;
-import com.frank.jsoup.test.util.ProxyIpUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
