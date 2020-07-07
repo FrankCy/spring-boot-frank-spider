@@ -1,4 +1,4 @@
-# Spring Boot Frank Spider 爬虫
+# Spring Boot Frank Spider 电商爬虫
 
 ## ```此项目只为研究各个工具到优劣，并不支持商用（...商用好像没法用，代码太烂了）```
  - - -
